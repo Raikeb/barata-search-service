@@ -9,5 +9,5 @@ public class BarataSearchServiceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(BarataSearchServiceApplication.class, args);
 	}
-
+//teste commit
 }
