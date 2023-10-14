@@ -24,7 +24,7 @@ public class VoosGoogleDTO implements Serializable {
 	private String previsaoSaida;
 	private String previsaoChegada;
 	private String duracao;
-	private Document status;
+	private String status;
 	private String carbono;
 	private String preco;
 	//sem a necessidade de definir os getters e setters pois será usado o lombok
