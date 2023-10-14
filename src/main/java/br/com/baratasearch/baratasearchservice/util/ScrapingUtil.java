@@ -3,9 +3,15 @@ package br.com.baratasearch.baratasearchservice.util;
 import java.io.IOException;
 import java.net.URL;
 import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.modelmapper.spi.StrongTypeConditionalConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +32,7 @@ public class ScrapingUtil {
 	
 	
 	public static void main(String[] args) {
-		String url = BASE_URL_GOOGLE_FLIGHT + "Flights%20to%20GIG%20from%20GRU%20on%202023-10-15" +COMPLEMENTO_URL_IDA+ COMPLEMENTO_URL_MOEDA_BRL + COMPLEMENTO_URL_IDIOMA;
+		String url = BASE_URL_GOOGLE_FLIGHT + "Flights%20to%20JFK%20from%20GRU%20on%202023-10-15" +COMPLEMENTO_URL_IDA+ COMPLEMENTO_URL_MOEDA_BRL + COMPLEMENTO_URL_IDIOMA;
 		ScrapingUtil scraping = new ScrapingUtil();
 		scraping.obtemInfoVoo(url);
 	}
@@ -40,10 +46,10 @@ public class ScrapingUtil {
 			document = Jsoup.connect(url).get();
 			
 			String title = document.title();
-			LOGGER.info("Informações de melhor Voo {}", title);//titulo da página
-			
+			LOGGER.info("Informações de melhores Voo {}", title);//titulo da página
+			obtemLogoCompanhiaVoo(document);
 			obtemCompanhiaVoo(document);
-			StatusVoo statusVoo =  obtemStatusVoo(document);
+			obtemStatusVoo(document);
 			obtemDuracaoVoo(document);
 			obtemCarbonoVoo(document);
 			obtemPrecoVoo(document);
@@ -56,118 +62,156 @@ public class ScrapingUtil {
 		return voo;
 	}
 
-	public String obtemCompanhiaVoo(Document document) {
-		String companhia = null;
-		
-		boolean isCompanhia = document.select("div[class=sSHqwe tPgKwe ogfYpf]").isEmpty();
-		if (!isCompanhia) {
-			companhia = document.select("div[class=sSHqwe tPgKwe ogfYpf]").first().text();			
-		}
-		LOGGER.info("Companhia aérea: {}", companhia);
-	
-		
-		return companhia;
-		}
+	public List<String> obtemLogoCompanhiaVoo(Document document) {
+        List<String> logos = new ArrayList<>();
+        Elements elementos = document.select("div[class=EbY4Pc P2UJoe]");
 
-	public String obtemEscala(String pegaStatusVoo) {
-	    int indiceMin = pegaStatusVoo.indexOf("min");
-	    String escala = null;
-	    if (indiceMin != -1) {
-	        escala = pegaStatusVoo.substring(indiceMin + 3).trim();
+        for (Element elemento : elementos) {
+            String urlLogo = elemento.select("div[class=EbY4Pc P2UJoe]").attr("style");
+            int indiceInicio = urlLogo.indexOf("https://");
+            int indiceFim = urlLogo.indexOf(".png");
+            if (indiceInicio != -1 && indiceFim != -1) {
+                urlLogo = urlLogo.substring(indiceInicio, indiceFim + 4);
+                logos.add(urlLogo);
+            } else {
+                logos.add(null);
+            }
+        }
+
+        LOGGER.info("Logo da companhia aérea: {}", logos);
+        return logos;
+    }
+
+	public List<String> obtemCompanhiaVoo(Document document) {
+	    List<String> companhias = new ArrayList<>();
+
+	    Elements elementos = document.select("div[class=sSHqwe tPgKwe ogfYpf]");
+	    for (Element elemento : elementos) {
+	        String companhia = "";
+	        Elements spans = elemento.select("span");
+	        for (Element span : spans) {
+	            companhia += span.text() + " ";
+	        }
+	        companhia = companhia.trim();
+
+	        // Verifica se uma palavra aparece três vezes na mesma string
+	        String[] palavras = companhia.split(" ");
+	        Map<String, Integer> contagemPalavras = new HashMap<>();
+	        for (String palavra : palavras) {
+	            contagemPalavras.put(palavra, contagemPalavras.getOrDefault(palavra, 0) + 1);
+	        }
+
+	        boolean temPalavraRepetida = contagemPalavras.values().stream().anyMatch(contagem -> contagem >= 3);
+	        if (!temPalavraRepetida && !companhia.isEmpty()) {
+	            companhias.add(companhia);
+	        }
 	    }
-	    return escala;
+
+	    LOGGER.info("Companhia aérea: {}", companhias);
+	    return companhias;
 	}
 
-	public StatusVoo obtemStatusVoo(Document document) {
-	    // SEM_VOO,
-	    // SEM_ESCALAS,
-	    // SEM_ESCALAS_ATRASADO,
-	    // COM_ESCALAS,
-	    // COM_ESCALAS_ATRASADO;
+    public List<String> obtemStatusVoo(Document document) {
+        List<String> statusVoos = new ArrayList<>();
+        List<String> escalas = new ArrayList<>();
+        Elements elementos = document.select("div[class=BbR8Ec]");
 
-	    StatusVoo statusVoo = StatusVoo.SEM_VOO;
-	    boolean averiguaStatus;
-	    String escala = null;
-	    
-	    boolean isStatusVoo = document.select("div[class=BbR8Ec]").isEmpty();
-	    if (!isStatusVoo) {
-	        String pegaStatusVoo = document.select("div[class=BbR8Ec]").first().text();
+        for (Element elemento : elementos) {
+            String pegaStatusVoo = elemento.text().replace("parada", "parada de");
+            int indiceMin = pegaStatusVoo.indexOf("min");
 
-	        pegaStatusVoo = pegaStatusVoo.replace("parada", "parada de");
+            if (indiceMin != -1) {
+                String escala = pegaStatusVoo.substring(indiceMin + 3).trim();
+                escalas.add(escala);
 
-	        String pegaStatusVooCopia = new String(pegaStatusVoo);
+                if (pegaStatusVoo.contains("parada")) {
+                    statusVoos.add("COM_ESCALAS");
+                } else {
+                    statusVoos.add("SEM_ESCALAS");
+                }
+            } else {
+                escalas.add("Sem escalas");
+                statusVoos.add("SEM_ESCALAS");
+            }
+        }
 
-	        int indiceMin = pegaStatusVoo.indexOf("min");
-	        if (indiceMin != -1) {
-	            pegaStatusVoo = pegaStatusVoo.substring(0, indiceMin + 3);
-	        }
+        LOGGER.info("Status: {}", statusVoos);
+        LOGGER.info("Escala efetuada em: {}", escalas);
+        
+        return statusVoos;
+    }
 
-	        if (averiguaStatus = pegaStatusVoo.contains("parada")) {
-	            statusVoo = StatusVoo.COM_ESCALAS;
-	            escala = obtemEscala(pegaStatusVooCopia);
-	            
-	        } else {
-	            statusVoo = StatusVoo.SEM_ESCALAS;
-	        }
-	        LOGGER.info("Status: {}", pegaStatusVoo);
-	        if(escala != null) {
-	        LOGGER.info("Escala efetuada em: {}", escala);
-	    
-	        }
-		}
-	    return statusVoo;
-	}
-	
-	public String obtemDuracaoVoo(Document document) {
-	    String duracao = null;
-	    String aeroportoDePartida = null;
-	    String aeroportoDestino = null;
-	    
-	    boolean isDuracao = document.select("div[class=Ak5kof]").isEmpty();
-	    if (!isDuracao) {
-	        duracao = document.select("div[class=Ak5kof]").first().text();
-	        
-	        int indiceMin = duracao.indexOf("min");
-	        int indiceTraco = duracao.indexOf("–");
-	        
-	        if (indiceMin != -1 && indiceTraco != -1) {
-	            aeroportoDePartida = duracao.substring(indiceMin + 3, indiceTraco).trim();
-	            aeroportoDestino = duracao.substring(indiceTraco + 1).trim();
-	        }
-	        
-	        if (indiceMin != -1) {
-	        	duracao = duracao.substring(0, indiceMin + 3);
-	        }           
-	    }
-	    
-	    LOGGER.info("Duracao total: {}", duracao);
-	    LOGGER.info("Aeroporto de partida: {}", aeroportoDePartida);
-	    LOGGER.info("Aeroporto de destino: {}", aeroportoDestino);
-	    
-	    return duracao;
-	}
-	
-	public String obtemCarbonoVoo(Document document) {
-		String carbono = null;
-		
-		boolean isCarbono = document.select("div[class=AdWm1c lc3qH ogfYpf  Jucbnc PtgtFe]").isEmpty();
-		if (!isCarbono) {
-			carbono = document.select("div[class=AdWm1c lc3qH ogfYpf  Jucbnc PtgtFe]").first().text();			
-		}
-		LOGGER.info("Emissão de carbono: {}", carbono);
-		
-		return carbono;
-	}
-	
-	public String obtemPrecoVoo(Document document) {
-		String preco = null;
-		
-		boolean isPreco = document.select("div[class=YMlIz FpEdX]").isEmpty();
-		if (!isPreco) {
-			preco = document.select("div[class=YMlIz FpEdX]").first().text();			
-		}
-		LOGGER.info("Preço: {}", preco);
-		
-		return preco;
-	}
+    public List<String> obtemDuracaoVoo(Document document) {
+        List<String> duracoes = new ArrayList<>();
+        List<String> aeroportosPartida = new ArrayList<>();
+        List<String> aeroportosDestino = new ArrayList<>();
+
+        Elements elementos = document.select("div[class=Ak5kof]");
+        for (Element elemento : elementos) {
+            String duracao = null;
+            String aeroportoDePartida = null;
+            String aeroportoDestino = null;
+
+            String duracaoText = elemento.text();
+
+            // Verifica se o texto contém a palavra "min" (indicando duração em minutos).
+            int indiceMin = duracaoText.indexOf("min");
+            
+            if (indiceMin != -1) {
+                // Obtém a duração em minutos.
+                duracao = duracaoText.substring(0, indiceMin + 3).trim();
+            } else {
+                // Verifica se o texto contém a palavra "h" (indicando duração em horas).
+                int indiceHoras = duracaoText.indexOf("h");
+
+                if (indiceHoras != -1) {
+                    // Obtém a duração em horas.
+                    duracao = duracaoText.substring(0, indiceHoras + 1).trim();
+                }
+            }
+
+            // Verifica se o texto contém um traço (indicando aeroportos de partida e destino).
+            int indiceTraco = duracaoText.indexOf("–");
+
+            if (indiceTraco != -1) {
+                // Obtém os aeroportos de partida e destino com base no traço.
+                aeroportoDePartida = duracaoText.substring(indiceMin + 3, indiceTraco).trim();
+                aeroportoDestino = duracaoText.substring(indiceTraco + 1).trim();
+            }
+
+            duracoes.add(duracao);
+            aeroportosPartida.add(aeroportoDePartida);
+            aeroportosDestino.add(aeroportoDestino);
+        }
+
+        LOGGER.info("Duração total: {}", duracoes);
+        LOGGER.info("Aeroporto de partida: {}", aeroportosPartida);
+        LOGGER.info("Aeroporto de destino: {}", aeroportosDestino);
+
+        return duracoes;
+    }
+
+    public List<String> obtemCarbonoVoo(Document document) {
+        List<String> carbonos = new ArrayList<>();
+
+        Elements elementos = document.select("div[class=y0NSEe V1iAHe tPgKwe ogfYpf]");
+        for (Element elemento : elementos) {
+            carbonos.add(elemento.text());
+        }
+
+        LOGGER.info("Emissão de carbono: {}", carbonos);
+        return carbonos;
+    }
+
+    public List<String> obtemPrecoVoo(Document document) {
+        List<String> precos = new ArrayList<>();
+
+        Elements elementos = document.select("div[class=BVAVmf I11szd POX3ye]");
+        for (Element elemento : elementos) {
+            precos.add(elemento.text());
+        }
+
+        LOGGER.info("Preço: {}", precos);
+        return precos;
+    }
 }
