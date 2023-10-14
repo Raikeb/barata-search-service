@@ -26,7 +26,7 @@ public class ScrapingUtil {
 	
 	
 	public static void main(String[] args) {
-		String url = BASE_URL_GOOGLE_FLIGHT + "Flights%20to%20CGH%20from%20GIG%20on%202023-10-15" +COMPLEMENTO_URL_IDA+ COMPLEMENTO_URL_MOEDA_BRL + COMPLEMENTO_URL_IDIOMA;
+		String url = BASE_URL_GOOGLE_FLIGHT + "Flights%20to%20GIG%20from%20GRU%20on%202023-10-15" +COMPLEMENTO_URL_IDA+ COMPLEMENTO_URL_MOEDA_BRL + COMPLEMENTO_URL_IDIOMA;
 		ScrapingUtil scraping = new ScrapingUtil();
 		scraping.obtemInfoVoo(url);
 	}
@@ -43,8 +43,8 @@ public class ScrapingUtil {
 			LOGGER.info("Informações de melhor Voo {}", title);//titulo da página
 			
 			obtemCompanhiaVoo(document);
-			obtemDuracaoVoo(document);
 			StatusVoo statusVoo =  obtemStatusVoo(document);
+			obtemDuracaoVoo(document);
 			obtemCarbonoVoo(document);
 			obtemPrecoVoo(document);
 			
@@ -55,7 +55,7 @@ public class ScrapingUtil {
 		
 		return voo;
 	}
-	
+
 	public String obtemCompanhiaVoo(Document document) {
 		String companhia = null;
 		
@@ -64,48 +64,88 @@ public class ScrapingUtil {
 			companhia = document.select("div[class=sSHqwe tPgKwe ogfYpf]").first().text();			
 		}
 		LOGGER.info("Companhia aérea: {}", companhia);
+	
 		
 		return companhia;
 		}
-	
-	public String obtemDuracaoVoo(Document document) {
-		String duracao = null;
-		
-		boolean isDuracao = document.select("div[class=gvkrdb AdWm1c tPgKwe ogfYpf]").isEmpty();
-		if (!isDuracao) {
-			duracao = document.select("div[class=gvkrdb AdWm1c tPgKwe ogfYpf]").first().text();			
-		}
-		LOGGER.info("Duracao total: {}", duracao);
-		
-		return duracao;
-		}
-	
+
+	public String obtemEscala(String pegaStatusVoo) {
+	    int indiceMin = pegaStatusVoo.indexOf("min");
+	    String escala = null;
+	    if (indiceMin != -1) {
+	        escala = pegaStatusVoo.substring(indiceMin + 3).trim();
+	    }
+	    return escala;
+	}
+
 	public StatusVoo obtemStatusVoo(Document document) {
-		//		SEM_VOO,
-		//		SEM_ESCALAS,
-		//		SEM_ESCALAS_ATRASADO,
-		//		COM_ESCALAS,
-		//		COM_ESCALAS_ATRASADO;
-		
-		StatusVoo statusVoo = StatusVoo.SEM_VOO;
-		boolean averiguaStatus;
-		
-		boolean isStatusVoo = document.select("span[class=ogfYpf]").isEmpty();
-		if (!isStatusVoo) {
-			String pegaStatusVoo = document.select("span[class=ogfYpf]").first().text();
-			
-			if (averiguaStatus = pegaStatusVoo.contains("parada")) {
-				statusVoo = StatusVoo.COM_ESCALAS;
-			} else {
-				statusVoo = StatusVoo.SEM_ESCALAS;
-			}
-			LOGGER.info("Status: {}", pegaStatusVoo);
-			
-			
+	    // SEM_VOO,
+	    // SEM_ESCALAS,
+	    // SEM_ESCALAS_ATRASADO,
+	    // COM_ESCALAS,
+	    // COM_ESCALAS_ATRASADO;
+
+	    StatusVoo statusVoo = StatusVoo.SEM_VOO;
+	    boolean averiguaStatus;
+	    String escala = null;
+	    
+	    boolean isStatusVoo = document.select("div[class=BbR8Ec]").isEmpty();
+	    if (!isStatusVoo) {
+	        String pegaStatusVoo = document.select("div[class=BbR8Ec]").first().text();
+
+	        pegaStatusVoo = pegaStatusVoo.replace("parada", "parada de");
+
+	        String pegaStatusVooCopia = new String(pegaStatusVoo);
+
+	        int indiceMin = pegaStatusVoo.indexOf("min");
+	        if (indiceMin != -1) {
+	            pegaStatusVoo = pegaStatusVoo.substring(0, indiceMin + 3);
+	        }
+
+	        if (averiguaStatus = pegaStatusVoo.contains("parada")) {
+	            statusVoo = StatusVoo.COM_ESCALAS;
+	            escala = obtemEscala(pegaStatusVooCopia);
+	            
+	        } else {
+	            statusVoo = StatusVoo.SEM_ESCALAS;
+	        }
+	        LOGGER.info("Status: {}", pegaStatusVoo);
+	        if(escala != null) {
+	        LOGGER.info("Escala efetuada em: {}", escala);
+	    
+	        }
 		}
-		return statusVoo;
+	    return statusVoo;
 	}
 	
+	public String obtemDuracaoVoo(Document document) {
+	    String duracao = null;
+	    String aeroportoDePartida = null;
+	    String aeroportoDestino = null;
+	    
+	    boolean isDuracao = document.select("div[class=Ak5kof]").isEmpty();
+	    if (!isDuracao) {
+	        duracao = document.select("div[class=Ak5kof]").first().text();
+	        
+	        int indiceMin = duracao.indexOf("min");
+	        int indiceTraco = duracao.indexOf("–");
+	        
+	        if (indiceMin != -1 && indiceTraco != -1) {
+	            aeroportoDePartida = duracao.substring(indiceMin + 3, indiceTraco).trim();
+	            aeroportoDestino = duracao.substring(indiceTraco + 1).trim();
+	        }
+	        
+	        if (indiceMin != -1) {
+	        	duracao = duracao.substring(0, indiceMin + 3);
+	        }           
+	    }
+	    
+	    LOGGER.info("Duracao total: {}", duracao);
+	    LOGGER.info("Aeroporto de partida: {}", aeroportoDePartida);
+	    LOGGER.info("Aeroporto de destino: {}", aeroportoDestino);
+	    
+	    return duracao;
+	}
 	
 	public String obtemCarbonoVoo(Document document) {
 		String carbono = null;
