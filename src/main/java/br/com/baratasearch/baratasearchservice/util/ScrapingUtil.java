@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -63,24 +65,36 @@ public class ScrapingUtil {
 	}
 
 	public List<String> obtemLogoCompanhiaVoo(Document document) {
-        List<String> logos = new ArrayList<>();
-        Elements elementos = document.select("div[class=EbY4Pc P2UJoe]");
+	    List<String> logos = new ArrayList<>();
+	    Elements elementos = document.select("div[class=EbY4Pc P2UJoe]");
+	    String lastLogo = null;
+	    int count = 0;
 
-        for (Element elemento : elementos) {
-            String urlLogo = elemento.select("div[class=EbY4Pc P2UJoe]").attr("style");
-            int indiceInicio = urlLogo.indexOf("https://");
-            int indiceFim = urlLogo.indexOf(".png");
-            if (indiceInicio != -1 && indiceFim != -1) {
-                urlLogo = urlLogo.substring(indiceInicio, indiceFim + 4);
-                logos.add(urlLogo);
-            } else {
-                logos.add(null);
-            }
-        }
+	    for (Element elemento : elementos) {
+	        String urlLogo = elemento.select("div[class=EbY4Pc P2UJoe]").attr("style");
+	        Pattern pattern = Pattern.compile("default: url\\((https://.*?\\.png)\\)");
+	        Matcher matcher = pattern.matcher(urlLogo);
+	        if (matcher.find()) {
+	            String logoUrl = matcher.group(1);
+	            if (logoUrl.equals(lastLogo)) {
+	                count++;
+	                if (count == 5) {
+	                    logos.add(logoUrl);
+	                    count = 0;
+	                }
+	            } else {
+	                count = 1;
+	                lastLogo = logoUrl;
+	            }
+	        }
+	    }
 
-        LOGGER.info("Logo da companhia aérea: {}", logos);
-        return logos;
-    }
+	    LOGGER.info("Logo da companhia aérea: {}", logos);
+	    return logos;
+	}
+
+
+
 
 	public List<String> obtemCompanhiaVoo(Document document) {
 	    List<String> companhias = new ArrayList<>();
