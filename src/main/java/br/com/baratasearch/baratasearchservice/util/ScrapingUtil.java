@@ -33,6 +33,12 @@ public class ScrapingUtil {
 	private static final String COMPLEMENTO_URL_MOEDA_USD = "&curr=USD";
 	private static final String COMPLEMENTO_URL_IDIOMA="&hl=pt-BR";
 	
+	private static final String DIV_LOGO_COMPANHIAS = "div[class=EbY4Pc P2UJoe]";
+	private static final String DIV_COMPANHIAS_E_ESCALAS = "div[class=sSHqwe tPgKwe ogfYpf]";
+	private static final String DIV_STATUS_VOO = "div[class=BbR8Ec]";
+	private static final String DIV_DURACAO_VOO = "div[class=Ak5kof]";
+	private static final String DIV_CARBONO_VOO = "div[class=y0NSEe V1iAHe tPgKwe ogfYpf]";
+	private static final String DIV_PRECO_VOO = "div[class=BVAVmf I11szd POX3ye]";
 	
 	public static void main(String[] args) {
 		String url = BASE_URL_GOOGLE_FLIGHT + "Flights%20to%20JFK%20from%20GRU%20on%202023-10-16" +COMPLEMENTO_URL_IDA+ COMPLEMENTO_URL_MOEDA_BRL + COMPLEMENTO_URL_IDIOMA;
@@ -68,12 +74,12 @@ public class ScrapingUtil {
 
 	public List<String> obtemLogoCompanhiaVoo(Document document) {
 	    List<String> logos = new ArrayList<>();
-	    Elements elementos = document.select("div[class=EbY4Pc P2UJoe]");
+	    Elements elementos = document.select(DIV_LOGO_COMPANHIAS);
 	    String lastLogo = null;
 	    int count = 0;
 
 	    for (Element elemento : elementos) {
-	        String urlLogo = elemento.select("div[class=EbY4Pc P2UJoe]").attr("style");
+	        String urlLogo = elemento.select(DIV_LOGO_COMPANHIAS).attr("style");
 	        Pattern pattern = Pattern.compile("default: url\\((https://.*?\\.png)\\)");
 	        Matcher matcher = pattern.matcher(urlLogo);
 	        if (matcher.find()) {
@@ -99,7 +105,7 @@ public class ScrapingUtil {
 	public List<String> obtemCompanhiaVoo(Document document) {
 	    List<String> companhias = new ArrayList<>();
 
-	    Elements elementos = document.select("div[class=sSHqwe tPgKwe ogfYpf]");
+	    Elements elementos = document.select(DIV_COMPANHIAS_E_ESCALAS);
 	    for (Element elemento : elementos) {
 	        String companhia = "";
 	        Elements spans = elemento.select("span");
@@ -127,7 +133,7 @@ public class ScrapingUtil {
 
 	public List<String> obtemStatusEscalasVoo(Document document) {
 	    List<String> statusEscalasVoo = new ArrayList<>();
-	    Elements elementos = document.select("div[class=sSHqwe tPgKwe ogfYpf]");
+	    Elements elementos = document.select(DIV_COMPANHIAS_E_ESCALAS);
 
 	    for (Element elemento : elementos) {
 	        String ariaLabel = elemento.attr("aria-label");
@@ -167,7 +173,7 @@ public class ScrapingUtil {
 	
 	public List<String> obtemStatusVoo(Document document) {
 	    List<String> statusVoos = new ArrayList<>();
-	    Elements elementos = document.select("div[class=BbR8Ec]");
+	    Elements elementos = document.select(DIV_STATUS_VOO);
 
 	    for (Element elemento : elementos) {
 	        String pegaStatusVoo = elemento.text();
@@ -193,7 +199,7 @@ public class ScrapingUtil {
         List<String> aeroportosPartida = new ArrayList<>();
         List<String> aeroportosDestino = new ArrayList<>();
 
-        Elements elementos = document.select("div[class=Ak5kof]");
+        Elements elementos = document.select(DIV_DURACAO_VOO);
         for (Element elemento : elementos) {
             String duracao = null;
             String aeroportoDePartida = null;
@@ -241,7 +247,7 @@ public class ScrapingUtil {
     public List<String> obtemCarbonoVoo(Document document) {
         List<String> carbonos = new ArrayList<>();
 
-        Elements elementos = document.select("div[class=y0NSEe V1iAHe tPgKwe ogfYpf]");
+        Elements elementos = document.select(DIV_CARBONO_VOO);
         for (Element elemento : elementos) {
             carbonos.add(elemento.text());
         }
@@ -253,7 +259,7 @@ public class ScrapingUtil {
     public List<String> obtemPrecoVoo(Document document) {
         List<String> precos = new ArrayList<>();
 
-        Elements elementos = document.select("div[class=BVAVmf I11szd POX3ye]");
+        Elements elementos = document.select(DIV_PRECO_VOO);
         for (Element elemento : elementos) {
             precos.add(elemento.text());
         }
