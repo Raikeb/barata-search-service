@@ -5,6 +5,7 @@ import java.net.URL;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -34,7 +35,7 @@ public class ScrapingUtil {
 	
 	
 	public static void main(String[] args) {
-		String url = BASE_URL_GOOGLE_FLIGHT + "Flights%20to%20JFK%20from%20GRU%20on%202023-10-15" +COMPLEMENTO_URL_IDA+ COMPLEMENTO_URL_MOEDA_BRL + COMPLEMENTO_URL_IDIOMA;
+		String url = BASE_URL_GOOGLE_FLIGHT + "Flights%20to%20JFK%20from%20GRU%20on%202023-10-16" +COMPLEMENTO_URL_IDA+ COMPLEMENTO_URL_MOEDA_BRL + COMPLEMENTO_URL_IDIOMA;
 		ScrapingUtil scraping = new ScrapingUtil();
 		scraping.obtemInfoVoo(url);
 	}
@@ -52,6 +53,7 @@ public class ScrapingUtil {
 			obtemLogoCompanhiaVoo(document);
 			obtemCompanhiaVoo(document);
 			obtemStatusVoo(document);
+			obtemStatusEscalasVoo(document);
 			obtemDuracaoVoo(document);
 			obtemCarbonoVoo(document);
 			obtemPrecoVoo(document);
@@ -94,8 +96,6 @@ public class ScrapingUtil {
 	}
 
 
-
-
 	public List<String> obtemCompanhiaVoo(Document document) {
 	    List<String> companhias = new ArrayList<>();
 
@@ -125,35 +125,68 @@ public class ScrapingUtil {
 	    return companhias;
 	}
 
-    public List<String> obtemStatusVoo(Document document) {
-        List<String> statusVoos = new ArrayList<>();
-        List<String> escalas = new ArrayList<>();
-        Elements elementos = document.select("div[class=BbR8Ec]");
+	public List<String> obtemStatusEscalasVoo(Document document) {
+	    List<String> statusEscalasVoo = new ArrayList<>();
+	    Elements elementos = document.select("div[class=sSHqwe tPgKwe ogfYpf]");
 
-        for (Element elemento : elementos) {
-            String pegaStatusVoo = elemento.text().replace("parada", "parada de");
-            int indiceMin = pegaStatusVoo.indexOf("min");
+	    for (Element elemento : elementos) {
+	        String ariaLabel = elemento.attr("aria-label");
+	        // Adiciona um espaço entre caracteres de caixa baixa e caixa alta
+	        ariaLabel = ariaLabel.replaceAll("(\\p{Ll})(\\p{Lu})", "$1 $2");
+	        statusEscalasVoo.add(ariaLabel);
+	    }
 
-            if (indiceMin != -1) {
-                String escala = pegaStatusVoo.substring(indiceMin + 3).trim();
-                escalas.add(escala);
+	    // Remover elementos vazios ou que contêm apenas espaços em branco
+	    statusEscalasVoo.removeIf(String::isBlank);
 
-                if (pegaStatusVoo.contains("parada")) {
-                    statusVoos.add("COM_ESCALAS");
-                } else {
-                    statusVoos.add("SEM_ESCALAS");
-                }
-            } else {
-                escalas.add("Sem escalas");
-                statusVoos.add("SEM_ESCALAS");
-            }
-        }
+	    // Obter o status do voo
+	    List<String> statusVoos = obtemStatusVoo(document);
+	    
+	    LOGGER.info("Status: {}", statusVoos);
+	    
+	    // Unir as informações de statusEscalasVoo e statusVoos
+	    List<String> statusFinal = new ArrayList<>();
+	    Iterator<String> iteratorStatusEscalasVoo = statusEscalasVoo.iterator();
 
-        LOGGER.info("Status: {}", statusVoos);
-        LOGGER.info("Escala efetuada em: {}", escalas);
-        
-        return statusVoos;
-    }
+	    for (String statusVoo : statusVoos) {
+	        if (statusVoo.equals("COM_ESCALAS") && iteratorStatusEscalasVoo.hasNext()) {
+	            statusFinal.add(iteratorStatusEscalasVoo.next());
+	        } else if (!statusVoo.equals("COM_ESCALAS")) {
+	            statusFinal.add(statusVoo);
+	        }
+	    }
+
+	    LOGGER.info("Escalas: {}", statusFinal);
+
+	    return statusFinal;
+	}
+
+
+
+
+	
+	public List<String> obtemStatusVoo(Document document) {
+	    List<String> statusVoos = new ArrayList<>();
+	    Elements elementos = document.select("div[class=BbR8Ec]");
+
+	    for (Element elemento : elementos) {
+	        String pegaStatusVoo = elemento.text();
+
+	        if (pegaStatusVoo.contains("parada")) {
+	            statusVoos.add("COM_ESCALAS");
+	        } else {
+	            statusVoos.add("SEM_ESCALAS");
+	        }
+
+	        if (statusVoos.isEmpty()) {
+	            statusVoos.add("SEM_ESCALAS");
+	        }
+	    }
+	  
+	    return statusVoos;
+	}
+
+
 
     public List<String> obtemDuracaoVoo(Document document) {
         List<String> duracoes = new ArrayList<>();
