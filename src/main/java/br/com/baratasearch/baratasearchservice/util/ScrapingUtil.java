@@ -3,13 +3,16 @@ package br.com.baratasearch.baratasearchservice.util;
 import java.io.IOException;
 import java.net.URL;
 import java.security.PublicKey;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.text.ParseException;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -24,7 +27,7 @@ import br.com.baratasearch.baratasearchservice.dto.VoosGoogleDTO;
 public class ScrapingUtil {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ScrapingUtil.class);
-	
+	//MONTAGEM DA URL
 	private static final String BASE_URL_GOOGLE_FLIGHT ="https://www.google.com/travel/flights?q=";
 	private static final String COMPLEMENTO_URL_IDA = "%20oneway";
 	private static final String COMPLEMENTO_URL_IDA_E_VOLTA = "%20roundtrip%20";
@@ -33,6 +36,7 @@ public class ScrapingUtil {
 	private static final String COMPLEMENTO_URL_MOEDA_USD = "&curr=USD";
 	private static final String COMPLEMENTO_URL_IDIOMA="&hl=pt-BR";
 	
+	//DIVS DA PÁGINA
 	private static final String DIV_LOGO_COMPANHIAS = "div[class=EbY4Pc P2UJoe]";
 	private static final String DIV_COMPANHIAS_E_ESCALAS = "div[class=sSHqwe tPgKwe ogfYpf]";
 	private static final String DIV_STATUS_VOO = "div[class=BbR8Ec]";
@@ -267,4 +271,44 @@ public class ScrapingUtil {
         LOGGER.info("Preço: {}", precos);
         return precos;
     }
+    
+    public String agrupaUrlSomenteIda(String defChegada, String defSaida, String defData) {	
+    	String x = null;
+    	try {
+    		String saida = defChegada.replace(" ", "%20").replace("-", "%20");
+    		String chegada = defChegada.replace(" ", "%20").replace("-", "%20");
+			String data = converteData(defData);
+		} catch (Exception e) {
+			LOGGER.error("Erro ao agrupar URL de somente ida: ", e.getMessage());
+		}
+    	
+    	return x;
+    }
+    
+    public static String removeDuploEspaco(String original) {
+        return original.replaceAll("%20%20", "%20");
+    }
+    
+    public static String converteData(String dataOriginal) throws Exception {
+        SimpleDateFormat formatoOriginal = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat formatoDesejado = new SimpleDateFormat("yyyy-MM-dd");
+
+        // Verifica se a data já está no formato desejado
+        if (dataOriginal.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            return dataOriginal;
+        }
+
+        // Tenta converter a data para o formato original
+        Date data;
+        try {
+            data = formatoOriginal.parse(dataOriginal);
+        } catch (ParseException e) {
+            throw new Exception("Erro: A data não está no formato dd/MM/yyyy");
+        }
+
+        // Retorna a data no formato desejado
+        return formatoDesejado.format(data);
+    }
+    
+    
 }
