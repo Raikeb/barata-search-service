@@ -2,6 +2,7 @@ package br.com.baratasearch.baratasearchservice.util;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.channels.Channel;
 import java.security.PublicKey;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,7 +10,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.text.ParseException;
@@ -22,13 +25,22 @@ import org.modelmapper.spi.StrongTypeConditionalConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserType;
+import com.microsoft.playwright.ElementHandle;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.options.LoadState;
+
 import br.com.baratasearch.baratasearchservice.dto.VoosGoogleDTO;
+import br.com.baratasearch.baratasearchservice.model.Aeroportos;
 
 public class ScrapingUtil {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ScrapingUtil.class);
 	//MONTAGEM DA URL
 	private static final String BASE_URL_GOOGLE_FLIGHT ="https://www.google.com/travel/flights?q=";
+	private static String URL_COMPLETA_GOOGLE_FLIGHT = "";
 	private static final String COMPLEMENTO_URL_IDA = "%20oneway";
 	private static final String COMPLEMENTO_URL_IDA_E_VOLTA = "%20roundtrip%20";
 	
@@ -37,53 +49,66 @@ public class ScrapingUtil {
 	private static final String COMPLEMENTO_URL_IDIOMA="&hl=pt-BR";
 	
 	//DIVS DA PÁGINA
-	private static final String DIV_LOGO_COMPANHIAS = "div[class=EbY4Pc P2UJoe]";
-	private static final String DIV_COMPANHIAS_E_ESCALAS = "div[class=sSHqwe tPgKwe ogfYpf]";
-	private static final String DIV_STATUS_VOO = "div[class=BbR8Ec]";
-	private static final String DIV_DURACAO_VOO = "div[class=Ak5kof]";
-	private static final String DIV_CARBONO_VOO = "div[class=y0NSEe V1iAHe tPgKwe ogfYpf]";
-	private static final String DIV_PRECO_VOO = "div[class=BVAVmf I11szd POX3ye]";
+	private static final String DIV_LOGO_COMPANHIAS = "div.EbY4Pc.P2UJoe";
+	private static final String DIV_COMPANHIAS = "div.sSHqwe.tPgKwe.ogfYpf";
+	private static final String DIV_ESCALAS = ".sSHqwe.tPgKwe.ogfYpf";
+	private static final String DIV_STATUS_VOO = "div.BbR8Ec";
+	private static final String DIV_DURACAO_VOO = "div.Ak5kof";
+	private static final String DIV_CARBONO_VOO = "div.y0NSEe.V1iAHe.tPgKwe.ogfYpf";
+	private static final String DIV_PRECO_VOO = "div.BVAVmf.I11szd.POX3ye";
 	
-	public static void main(String[] args) {
-		String url = BASE_URL_GOOGLE_FLIGHT + "Flights%20to%20JFK%20from%20GRU%20on%202023-10-16" +COMPLEMENTO_URL_IDA+ COMPLEMENTO_URL_MOEDA_BRL + COMPLEMENTO_URL_IDIOMA;
+	public static void main(String[] args) throws InterruptedException {  
+		//String url = BASE_URL_GOOGLE_FLIGHT + "Flights%20to%20JFK%20from%20SSA%20on%202023-10-19" +COMPLEMENTO_URL_IDA_E_VOLTA+"2023-11-24"+ COMPLEMENTO_URL_MOEDA_BRL + COMPLEMENTO_URL_IDIOMA;
+		String saida = "SSA";
+		String chegada = "JFK";
+		
+		String dataIda = "19/10/2023";
+		String dataVolta= "24/11/2023";
+		
+		//String url =  agrupaUrlSomenteIda(saida, chegada, dataIda);
+		String url = agrupaUrlIdaEVolta(saida,chegada,dataIda,dataVolta);
 		ScrapingUtil scraping = new ScrapingUtil();
 		scraping.obtemInfoVoo(url);
 	}
-		
+	
+			
 	public VoosGoogleDTO obtemInfoVoo(String url) {
-		VoosGoogleDTO voo = new VoosGoogleDTO();
-		
-		Document document = null;
-		
-		try {
-			document = Jsoup.connect(url).get();
-			
-			String title = document.title();
-			LOGGER.info("Informações de melhores Voo {}", title);//titulo da página
-			obtemLogoCompanhiaVoo(document);
-			obtemCompanhiaVoo(document);
-			obtemStatusVoo(document);
-			obtemStatusEscalasVoo(document);
-			obtemDuracaoVoo(document);
-			obtemCarbonoVoo(document);
-			obtemPrecoVoo(document);
-			
-			} catch (IOException e) {
-			LOGGER.error("Erro ao tentar conectar com o Google Flights usando JSOUP -> {} ", e.getMessage()) ;
-			e.printStackTrace();
-		}
-		
-		return voo;
+	    VoosGoogleDTO voo = new VoosGoogleDTO();
+	           
+	    try (Playwright playwright = Playwright.create()) {
+	        Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setChannel("msedge"));
+	        Page page = browser.newPage();
+	        page.navigate(url);
+	        page.waitForLoadState(LoadState.NETWORKIDLE);
+	       
+
+	        String title = page.title();
+	        LOGGER.info("Informações de melhores Voo {}", title);//titulo da página
+	        
+	        obtemLogoCompanhiaVoo(page);
+	        obtemCompanhiaVoo(page);
+	        obtemStatusVoo(page);
+	        obtemStatusEscalasVoo(page);
+//	        obtemDuracaoVoo(page);
+//	        obtemCarbonoVoo(page);
+//	        obtemPrecoVoo(page);
+
+	    } catch (Exception e) {
+	        LOGGER.error("Erro ao tentar conectar com o Google Flights usando Playwright -> {} ", e.getMessage());
+	        e.printStackTrace();
+	    }
+	   
+	    return voo;
 	}
 
-	public List<String> obtemLogoCompanhiaVoo(Document document) {
+	public List<String> obtemLogoCompanhiaVoo(Page page) {
 	    List<String> logos = new ArrayList<>();
-	    Elements elementos = document.select(DIV_LOGO_COMPANHIAS);
+	    List<ElementHandle> elementos = page.querySelectorAll(DIV_LOGO_COMPANHIAS);
 	    String lastLogo = null;
 	    int count = 0;
 
-	    for (Element elemento : elementos) {
-	        String urlLogo = elemento.select(DIV_LOGO_COMPANHIAS).attr("style");
+	    for (ElementHandle elemento : elementos) {
+	        String urlLogo = elemento.getAttribute("style");
 	        Pattern pattern = Pattern.compile("default: url\\((https://.*?\\.png)\\)");
 	        Matcher matcher = pattern.matcher(urlLogo);
 	        if (matcher.find()) {
@@ -106,15 +131,15 @@ public class ScrapingUtil {
 	}
 
 
-	public List<String> obtemCompanhiaVoo(Document document) {
+	public List<String> obtemCompanhiaVoo(Page page) {
 	    List<String> companhias = new ArrayList<>();
 
-	    Elements elementos = document.select(DIV_COMPANHIAS_E_ESCALAS);
-	    for (Element elemento : elementos) {
+	    List<ElementHandle> elementos = page.querySelectorAll(DIV_COMPANHIAS);
+	    for (ElementHandle elemento : elementos) {
 	        String companhia = "";
-	        Elements spans = elemento.select("span");
-	        for (Element span : spans) {
-	            companhia += span.text() + " ";
+	        List<ElementHandle> spans = elemento.querySelectorAll("span");
+	        for (ElementHandle span : spans) {
+	            companhia += span.textContent() + " ";
 	        }
 	        companhia = companhia.trim();
 
@@ -135,12 +160,13 @@ public class ScrapingUtil {
 	    return companhias;
 	}
 
-	public List<String> obtemStatusEscalasVoo(Document document) {
+	public List<String> obtemStatusEscalasVoo(Page page) {
 	    List<String> statusEscalasVoo = new ArrayList<>();
-	    Elements elementos = document.select(DIV_COMPANHIAS_E_ESCALAS);
+	    List<ElementHandle> elementos = page.querySelectorAll(DIV_ESCALAS);
 
-	    for (Element elemento : elementos) {
-	        String ariaLabel = elemento.attr("aria-label");
+	    for (ElementHandle elemento : elementos) {
+	        String ariaLabel = elemento.getAttribute("aria-label");
+	        
 	        // Adiciona um espaço entre caracteres de caixa baixa e caixa alta
 	        ariaLabel = ariaLabel.replaceAll("(\\p{Ll})(\\p{Lu})", "$1 $2");
 	        statusEscalasVoo.add(ariaLabel);
@@ -150,7 +176,7 @@ public class ScrapingUtil {
 	    statusEscalasVoo.removeIf(String::isBlank);
 
 	    // Obter o status do voo
-	    List<String> statusVoos = obtemStatusVoo(document);
+	    List<String> statusVoos = obtemStatusVoo(page);
 	    
 	    LOGGER.info("Status: {}", statusVoos);
 	    
@@ -171,16 +197,12 @@ public class ScrapingUtil {
 	    return statusFinal;
 	}
 
-
-
-
-	
-	public List<String> obtemStatusVoo(Document document) {
+	public List<String> obtemStatusVoo(Page page) {
 	    List<String> statusVoos = new ArrayList<>();
-	    Elements elementos = document.select(DIV_STATUS_VOO);
+	    List<ElementHandle> elementos = page.querySelectorAll(DIV_STATUS_VOO);
 
-	    for (Element elemento : elementos) {
-	        String pegaStatusVoo = elemento.text();
+	    for (ElementHandle elemento : elementos) {
+	        String pegaStatusVoo = elemento.textContent();
 
 	        if (pegaStatusVoo.contains("parada")) {
 	            statusVoos.add("COM_ESCALAS");
@@ -195,6 +217,7 @@ public class ScrapingUtil {
 	  
 	    return statusVoos;
 	}
+
 
 
 
@@ -272,17 +295,54 @@ public class ScrapingUtil {
         return precos;
     }
     
-    public String agrupaUrlSomenteIda(String defChegada, String defSaida, String defData) {	
-    	String x = null;
-    	try {
-    		String saida = defChegada.replace(" ", "%20").replace("-", "%20");
-    		String chegada = defChegada.replace(" ", "%20").replace("-", "%20");
-			String data = converteData(defData);
+    public static String agrupaUrlSomenteIda(String defSaida, String defChegada,  String defData) {	
+    	
+    	String saida;
+    	String chegada;
+    	String data;
+    	Aeroportos aeroportos = new Aeroportos();
+    	
+    	
+    	try {   		
+    		saida = aeroportos.getSiglaAeroporto(defSaida);
+    		chegada = aeroportos.getSiglaAeroporto(defChegada);
+			data = converteData(defData);
+			URL_COMPLETA_GOOGLE_FLIGHT =
+					BASE_URL_GOOGLE_FLIGHT + "Flights%20to%20" +
+					chegada + "%20from%20" + saida + "%20on%20" + data +
+					COMPLEMENTO_URL_IDA+ COMPLEMENTO_URL_MOEDA_BRL + COMPLEMENTO_URL_IDIOMA;
+			
 		} catch (Exception e) {
 			LOGGER.error("Erro ao agrupar URL de somente ida: ", e.getMessage());
 		}
     	
-    	return x;
+    	return URL_COMPLETA_GOOGLE_FLIGHT;
+    }
+    
+    public static String agrupaUrlIdaEVolta(String defSaida, String defChegada,  String defDataIda, String defDataVolta) {	
+    	
+    	String saida;
+    	String chegada;
+    	String dataIda;
+    	String dataVolta;
+    	Aeroportos aeroportos = new Aeroportos();
+    	
+    	try {   		
+    		saida = aeroportos.getSiglaAeroporto(defSaida);
+    		chegada = aeroportos.getSiglaAeroporto(defChegada);
+			dataIda = converteData(defDataIda);
+			dataVolta = converteData(defDataVolta);
+			URL_COMPLETA_GOOGLE_FLIGHT =
+					BASE_URL_GOOGLE_FLIGHT + "Flights%20to%20" +
+					chegada + "%20from%20" + saida + "%20on%20" + dataIda +
+					COMPLEMENTO_URL_IDA_E_VOLTA + dataVolta +
+					COMPLEMENTO_URL_MOEDA_BRL + COMPLEMENTO_URL_IDIOMA;
+			
+		} catch (Exception e) {
+			LOGGER.error("Erro ao agrupar URL de somente ida: ", e.getMessage());
+		}
+    	
+    	return URL_COMPLETA_GOOGLE_FLIGHT;
     }
     
     public static String removeDuploEspaco(String original) {

@@ -3,8 +3,6 @@ package br.com.baratasearch.baratasearchservice.dto;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import org.jsoup.nodes.Document;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
