@@ -239,7 +239,7 @@ public class ScrapingUtil {
 	        String aeroportoDestino = null;
 
 	        String duracaoText = elemento.innerText();
-	        LOGGER.info("duracaoText: {}",duracaoText);
+	        
 	        // Verifica se o texto contém a palavra "min" (indicando duração em minutos).
 	        int indiceMin = duracaoText.indexOf("min");
 
@@ -286,7 +286,9 @@ public class ScrapingUtil {
 	    List<ElementHandle> elementos = page.querySelectorAll(DIV_CARBONO_VOO);
 
 	    for (ElementHandle elemento : elementos) {
-	        carbonos.add(elemento.innerText());
+	        String texto = elemento.innerText();
+	        texto = texto.replace("\n", " "); // Remove as quebras de linha.
+	        carbonos.add(texto);
 	    }
 
 	    LOGGER.info("Emissão de carbono: {}", carbonos);
