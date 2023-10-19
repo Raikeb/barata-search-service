@@ -90,8 +90,8 @@ public class ScrapingUtil {
 	        obtemStatusVoo(page);
 	//        obtemStatusEscalasVoo(page);
 	        obtemDuracaoVoo(page);
-//	        obtemCarbonoVoo(page);
-//	        obtemPrecoVoo(page);
+	        obtemCarbonoVoo(page);
+	        obtemPrecoVoo(page);
 
 	    } catch (Exception e) {
 	        LOGGER.error("Erro ao tentar conectar com o Google Flights usando Playwright -> {} ", e.getMessage());
@@ -239,7 +239,7 @@ public class ScrapingUtil {
 	        String aeroportoDestino = null;
 
 	        String duracaoText = elemento.innerText();
-
+	        LOGGER.info("duracaoText: {}",duracaoText);
 	        // Verifica se o texto contém a palavra "min" (indicando duração em minutos).
 	        int indiceMin = duracaoText.indexOf("min");
 
@@ -279,29 +279,34 @@ public class ScrapingUtil {
 	    return duracoes;
 	}
 
-    public List<String> obtemCarbonoVoo(Document document) {
-        List<String> carbonos = new ArrayList<>();
+	public List<String> obtemCarbonoVoo(Page page) {
+	    List<String> carbonos = new ArrayList<>();
 
-        Elements elementos = document.select(DIV_CARBONO_VOO);
-        for (Element elemento : elementos) {
-            carbonos.add(elemento.text());
-        }
+	    // Substitua 'seletor' pelo seletor CSS apropriado.
+	    List<ElementHandle> elementos = page.querySelectorAll(DIV_CARBONO_VOO);
 
-        LOGGER.info("Emissão de carbono: {}", carbonos);
-        return carbonos;
-    }
+	    for (ElementHandle elemento : elementos) {
+	        carbonos.add(elemento.innerText());
+	    }
 
-    public List<String> obtemPrecoVoo(Document document) {
-        List<String> precos = new ArrayList<>();
+	    LOGGER.info("Emissão de carbono: {}", carbonos);
+	    return carbonos;
+	}
 
-        Elements elementos = document.select(DIV_PRECO_VOO);
-        for (Element elemento : elementos) {
-            precos.add(elemento.text());
-        }
+	public List<String> obtemPrecoVoo(Page page) {
+	    List<String> precos = new ArrayList<>();
 
-        LOGGER.info("Preço: {}", precos);
-        return precos;
-    }
+	    // Substitua 'seletor' pelo seletor CSS apropriado.
+	    List<ElementHandle> elementos = page.querySelectorAll(DIV_PRECO_VOO);
+
+	    for (ElementHandle elemento : elementos) {
+	        precos.add(elemento.innerText());
+	    }
+
+	    LOGGER.info("Preço: {}", precos);
+	    return precos;
+	}
+
     
     public static String agrupaUrlSomenteIda(String defSaida, String defChegada,  String defData) {	
     	
