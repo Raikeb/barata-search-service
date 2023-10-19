@@ -246,6 +246,7 @@ public class ScrapingUtil {
 	        if (indiceMin != -1) {
 	            // Obtém a duração em minutos.
 	            duracao = duracaoText.substring(0, indiceMin + 3).trim();
+	            duracaoText = duracaoText.substring(indiceMin + 3).trim(); // Atualiza o texto removendo a duração.
 	        } else {
 	            // Verifica se o texto contém a palavra "h" (indicando duração em horas).
 	            int indiceHoras = duracaoText.indexOf("h");
@@ -253,6 +254,7 @@ public class ScrapingUtil {
 	            if (indiceHoras != -1) {
 	                // Obtém a duração em horas.
 	                duracao = duracaoText.substring(0, indiceHoras + 1).trim();
+	                duracaoText = duracaoText.substring(indiceHoras + 1).trim(); // Atualiza o texto removendo a duração.
 	            }
 	        }
 
@@ -261,7 +263,7 @@ public class ScrapingUtil {
 
 	        if (indiceTraco != -1) {
 	            // Obtém os aeroportos de partida e destino com base no traço.
-	            aeroportoDePartida = duracaoText.substring(indiceMin + 3, indiceTraco).trim();
+	            aeroportoDePartida = duracaoText.substring(0, indiceTraco).trim();
 	            aeroportoDestino = duracaoText.substring(indiceTraco + 1).trim();
 	        }
 
