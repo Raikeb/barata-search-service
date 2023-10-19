@@ -44,11 +44,20 @@ public class ScrapingUtil {
 	private static final String DIV_CARBONO_VOO = "div[class=y0NSEe V1iAHe tPgKwe ogfYpf]";
 	private static final String DIV_PRECO_VOO = "div[class=BVAVmf I11szd POX3ye]";
 	
-	public static void main(String[] args) {
-		String url = BASE_URL_GOOGLE_FLIGHT + "Flights%20to%20JFK%20from%20GRU%20on%202023-10-16" +COMPLEMENTO_URL_IDA+ COMPLEMENTO_URL_MOEDA_BRL + COMPLEMENTO_URL_IDIOMA;
+	public static void main(String[] args) throws InterruptedException {  
+		//String url = BASE_URL_GOOGLE_FLIGHT + "Flights%20to%20JFK%20from%20SSA%20on%202023-10-19" +COMPLEMENTO_URL_IDA_E_VOLTA+"2023-11-24"+ COMPLEMENTO_URL_MOEDA_BRL + COMPLEMENTO_URL_IDIOMA;
+		String saida = "SSA";
+		String chegada = "JFK";
+		
+		String dataIda = "19/10/2023";
+		String dataVolta= "24/11/2023";
+		
+		//String url =  agrupaUrlSomenteIda(saida, chegada, dataIda);
+		String url = agrupaUrlIdaEVolta(saida,chegada,dataIda,dataVolta);
 		ScrapingUtil scraping = new ScrapingUtil();
 		scraping.obtemInfoVoo(url);
 	}
+
 		
 	public VoosGoogleDTO obtemInfoVoo(String url) {
 		VoosGoogleDTO voo = new VoosGoogleDTO();
@@ -272,17 +281,54 @@ public class ScrapingUtil {
         return precos;
     }
     
-    public String agrupaUrlSomenteIda(String defChegada, String defSaida, String defData) {	
-    	String x = null;
-    	try {
-    		String saida = defChegada.replace(" ", "%20").replace("-", "%20");
-    		String chegada = defChegada.replace(" ", "%20").replace("-", "%20");
-			String data = converteData(defData);
+public static String agrupaUrlSomenteIda(String defSaida, String defChegada,  String defData) {	
+    	
+    	String saida;
+    	String chegada;
+    	String data;
+    	Aeroportos aeroportos = new Aeroportos();
+    	
+    	
+    	try {   		
+    		saida = aeroportos.getSiglaAeroporto(defSaida);
+    		chegada = aeroportos.getSiglaAeroporto(defChegada);
+			data = converteData(defData);
+			URL_COMPLETA_GOOGLE_FLIGHT =
+					BASE_URL_GOOGLE_FLIGHT + "Flights%20to%20" +
+					chegada + "%20from%20" + saida + "%20on%20" + data +
+					COMPLEMENTO_URL_IDA+ COMPLEMENTO_URL_MOEDA_BRL + COMPLEMENTO_URL_IDIOMA;
+			
 		} catch (Exception e) {
 			LOGGER.error("Erro ao agrupar URL de somente ida: ", e.getMessage());
 		}
     	
-    	return x;
+    	return URL_COMPLETA_GOOGLE_FLIGHT;
+    }
+    
+    public static String agrupaUrlIdaEVolta(String defSaida, String defChegada,  String defDataIda, String defDataVolta) {	
+    	
+    	String saida;
+    	String chegada;
+    	String dataIda;
+    	String dataVolta;
+    	Aeroportos aeroportos = new Aeroportos();
+    	
+    	try {   		
+    		saida = aeroportos.getSiglaAeroporto(defSaida);
+    		chegada = aeroportos.getSiglaAeroporto(defChegada);
+			dataIda = converteData(defDataIda);
+			dataVolta = converteData(defDataVolta);
+			URL_COMPLETA_GOOGLE_FLIGHT =
+					BASE_URL_GOOGLE_FLIGHT + "Flights%20to%20" +
+					chegada + "%20from%20" + saida + "%20on%20" + dataIda +
+					COMPLEMENTO_URL_IDA_E_VOLTA + dataVolta +
+					COMPLEMENTO_URL_MOEDA_BRL + COMPLEMENTO_URL_IDIOMA;
+			
+		} catch (Exception e) {
+			LOGGER.error("Erro ao agrupar URL de somente ida: ", e.getMessage());
+		}
+    	
+    	return URL_COMPLETA_GOOGLE_FLIGHT;
     }
     
     public static String removeDuploEspaco(String original) {
