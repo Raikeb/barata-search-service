@@ -51,11 +51,11 @@ public class ScrapingUtil {
 	//DIVS DA PÁGINA
 	private static final String DIV_LOGO_COMPANHIAS = "div.EbY4Pc.P2UJoe";
 	private static final String DIV_COMPANHIAS = "div.sSHqwe.tPgKwe.ogfYpf";
-	private static final String DIV_ESCALAS = ".sSHqwe.tPgKwe.ogfYpf";
-	private static final String DIV_STATUS_VOO = "div.BbR8Ec.span.ogfYpf";
+	private static final String DIV_ESCALAS = "div.sSHqwe.tPgKwe.ogfYpf";
+	private static final String DIV_STATUS_VOO = "div.EfT7Ae.AdWm1c.tPgKwe";
 	private static final String DIV_DURACAO_VOO = "div.Ak5kof";
 	private static final String DIV_CARBONO_VOO = "div.y0NSEe.V1iAHe.tPgKwe.ogfYpf";
-	private static final String DIV_PRECO_VOO = "div.BVAVmf.I11szd.POX3ye";
+	private static final String DIV_PRECO_VOO = "div.U3gSDe";
 	
 	public static void main(String[] args) throws InterruptedException {  
 		//String url = BASE_URL_GOOGLE_FLIGHT + "Flights%20to%20JFK%20from%20SSA%20on%202023-10-19" +COMPLEMENTO_URL_IDA_E_VOLTA+"2023-11-24"+ COMPLEMENTO_URL_MOEDA_BRL + COMPLEMENTO_URL_IDIOMA;
@@ -65,8 +65,8 @@ public class ScrapingUtil {
 		String dataIda = "20/10/2023";
 		String dataVolta= "24/10/2023";
 		
-		String url =  agrupaUrlSomenteIda(saida, chegada, dataIda);
-		//String url = agrupaUrlIdaEVolta(saida,chegada,dataIda,dataVolta);
+		//String url =  agrupaUrlSomenteIda(saida, chegada, dataIda);
+		String url = agrupaUrlIdaEVolta(saida,chegada,dataIda,dataVolta);
 		ScrapingUtil scraping = new ScrapingUtil();
 		scraping.obtemInfoVoo(url);
 	}
@@ -80,7 +80,7 @@ public class ScrapingUtil {
 	        Page page = browser.newPage();
 	        page.navigate(url);
 	        page.waitForLoadState(LoadState.NETWORKIDLE);
-	       
+	        page.waitForLoadState(LoadState.NETWORKIDLE);
 
 	        String title = page.title();
 	        LOGGER.info("Informações de melhores Voo {}", title);//titulo da página
@@ -88,7 +88,7 @@ public class ScrapingUtil {
 	        obtemLogoCompanhiaVoo(page);
 	        obtemCompanhiaVoo(page);
 	        obtemStatusVoo(page);
-	//        obtemStatusEscalasVoo(page);
+	        obtemStatusEscalasVoo(page);
 	        obtemDuracaoVoo(page);
 	        obtemCarbonoVoo(page);
 	        obtemPrecoVoo(page);
@@ -166,13 +166,15 @@ public class ScrapingUtil {
 
 	public List<String> obtemStatusEscalasVoo(Page page) {
 	    List<String> statusEscalasVoo = new ArrayList<>();
-	    List<ElementHandle> elementos = page.querySelectorAll(DIV_COMPANHIAS);
+	    List<ElementHandle> elementos = page.querySelectorAll(DIV_ESCALAS);
 
 	    for (ElementHandle elemento : elementos) {
 	        String ariaLabel = elemento.getAttribute("aria-label");
-	        // Adiciona um espaço entre caracteres de caixa baixa e caixa alta
-	        ariaLabel = ariaLabel.replaceAll("(\\p{Ll})(\\p{Lu})", "$1 $2");
-	        statusEscalasVoo.add(ariaLabel);
+	        if (ariaLabel != null) {
+	            // Adiciona um espaço entre caracteres de caixa baixa e caixa alta
+	            ariaLabel = ariaLabel.replaceAll("(\\p{Ll})(\\p{Lu})", "$1 $2");
+	            statusEscalasVoo.add(ariaLabel);
+	        }
 	    }
 
 	    // Remover elementos vazios ou que contêm apenas espaços em branco
@@ -203,7 +205,7 @@ public class ScrapingUtil {
 
 	public List<String> obtemStatusVoo(Page page) {
 	    List<String> statusVoos = new ArrayList<>();
-	    List<ElementHandle> elementos = page.querySelectorAll("div.EfT7Ae.AdWm1c.tPgKwe");
+	    List<ElementHandle> elementos = page.querySelectorAll(DIV_STATUS_VOO);
 
 	    for (ElementHandle elemento : elementos) {
 	        String pegaStatusVoo = elemento.textContent();
@@ -217,8 +219,7 @@ public class ScrapingUtil {
 	        if (statusVoos.isEmpty()) {
 	            statusVoos.add("SEM_ESCALAS");
 	        }
-	    }
-	    LOGGER.info("Status: {}", statusVoos);
+	    }	   
 	    return statusVoos;
 	}
 
@@ -302,12 +303,15 @@ public class ScrapingUtil {
 	    List<ElementHandle> elementos = page.querySelectorAll(DIV_PRECO_VOO);
 
 	    for (ElementHandle elemento : elementos) {
-	        precos.add(elemento.innerText());
+	        String texto = elemento.innerText();
+	        String preco = texto.split("\n")[0]; 
+	        precos.add(preco);
 	    }
 
 	    LOGGER.info("Preço: {}", precos);
 	    return precos;
 	}
+
 
     
     public static String agrupaUrlSomenteIda(String defSaida, String defChegada,  String defData) {	
