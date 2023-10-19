@@ -52,7 +52,7 @@ public class ScrapingUtil {
 	private static final String DIV_LOGO_COMPANHIAS = "div.EbY4Pc.P2UJoe";
 	private static final String DIV_COMPANHIAS = "div.sSHqwe.tPgKwe.ogfYpf";
 	private static final String DIV_ESCALAS = ".sSHqwe.tPgKwe.ogfYpf";
-	private static final String DIV_STATUS_VOO = "div.BbR8Ec";
+	private static final String DIV_STATUS_VOO = "div.BbR8Ec.span.ogfYpf";
 	private static final String DIV_DURACAO_VOO = "div.Ak5kof";
 	private static final String DIV_CARBONO_VOO = "div.y0NSEe.V1iAHe.tPgKwe.ogfYpf";
 	private static final String DIV_PRECO_VOO = "div.BVAVmf.I11szd.POX3ye";
@@ -60,13 +60,13 @@ public class ScrapingUtil {
 	public static void main(String[] args) throws InterruptedException {  
 		//String url = BASE_URL_GOOGLE_FLIGHT + "Flights%20to%20JFK%20from%20SSA%20on%202023-10-19" +COMPLEMENTO_URL_IDA_E_VOLTA+"2023-11-24"+ COMPLEMENTO_URL_MOEDA_BRL + COMPLEMENTO_URL_IDIOMA;
 		String saida = "SSA";
-		String chegada = "JFK";
+		String chegada = "GIG";
 		
-		String dataIda = "19/10/2023";
-		String dataVolta= "24/11/2023";
+		String dataIda = "20/10/2023";
+		String dataVolta= "24/10/2023";
 		
-		//String url =  agrupaUrlSomenteIda(saida, chegada, dataIda);
-		String url = agrupaUrlIdaEVolta(saida,chegada,dataIda,dataVolta);
+		String url =  agrupaUrlSomenteIda(saida, chegada, dataIda);
+		//String url = agrupaUrlIdaEVolta(saida,chegada,dataIda,dataVolta);
 		ScrapingUtil scraping = new ScrapingUtil();
 		scraping.obtemInfoVoo(url);
 	}
@@ -88,8 +88,8 @@ public class ScrapingUtil {
 	        obtemLogoCompanhiaVoo(page);
 	        obtemCompanhiaVoo(page);
 	        obtemStatusVoo(page);
-	        obtemStatusEscalasVoo(page);
-//	        obtemDuracaoVoo(page);
+	//        obtemStatusEscalasVoo(page);
+	        obtemDuracaoVoo(page);
 //	        obtemCarbonoVoo(page);
 //	        obtemPrecoVoo(page);
 
@@ -131,15 +131,19 @@ public class ScrapingUtil {
 	}
 
 
+	
+
 	public List<String> obtemCompanhiaVoo(Page page) {
 	    List<String> companhias = new ArrayList<>();
 
+	    // Selecione os elementos
 	    List<ElementHandle> elementos = page.querySelectorAll(DIV_COMPANHIAS);
 	    for (ElementHandle elemento : elementos) {
 	        String companhia = "";
+	        // Selecione os spans dentro do elemento
 	        List<ElementHandle> spans = elemento.querySelectorAll("span");
 	        for (ElementHandle span : spans) {
-	            companhia += span.textContent() + " ";
+	            companhia += span.innerText() + " ";
 	        }
 	        companhia = companhia.trim();
 
@@ -162,11 +166,10 @@ public class ScrapingUtil {
 
 	public List<String> obtemStatusEscalasVoo(Page page) {
 	    List<String> statusEscalasVoo = new ArrayList<>();
-	    List<ElementHandle> elementos = page.querySelectorAll(DIV_ESCALAS);
+	    List<ElementHandle> elementos = page.querySelectorAll(DIV_COMPANHIAS);
 
 	    for (ElementHandle elemento : elementos) {
 	        String ariaLabel = elemento.getAttribute("aria-label");
-	        
 	        // Adiciona um espaço entre caracteres de caixa baixa e caixa alta
 	        ariaLabel = ariaLabel.replaceAll("(\\p{Ll})(\\p{Lu})", "$1 $2");
 	        statusEscalasVoo.add(ariaLabel);
@@ -197,14 +200,15 @@ public class ScrapingUtil {
 	    return statusFinal;
 	}
 
+
 	public List<String> obtemStatusVoo(Page page) {
 	    List<String> statusVoos = new ArrayList<>();
-	    List<ElementHandle> elementos = page.querySelectorAll(DIV_STATUS_VOO);
+	    List<ElementHandle> elementos = page.querySelectorAll("div.EfT7Ae.AdWm1c.tPgKwe");
 
 	    for (ElementHandle elemento : elementos) {
 	        String pegaStatusVoo = elemento.textContent();
 
-	        if (pegaStatusVoo.contains("parada")) {
+	        if ((pegaStatusVoo.contains("parada"))||(pegaStatusVoo.contains("paradas"))) {
 	            statusVoos.add("COM_ESCALAS");
 	        } else {
 	            statusVoos.add("SEM_ESCALAS");
@@ -214,62 +218,64 @@ public class ScrapingUtil {
 	            statusVoos.add("SEM_ESCALAS");
 	        }
 	    }
-	  
+	    LOGGER.info("Status: {}", statusVoos);
 	    return statusVoos;
 	}
 
 
 
 
-    public List<String> obtemDuracaoVoo(Document document) {
-        List<String> duracoes = new ArrayList<>();
-        List<String> aeroportosPartida = new ArrayList<>();
-        List<String> aeroportosDestino = new ArrayList<>();
+	public static List<String> obtemDuracaoVoo(Page page) {
+	    List<String> duracoes = new ArrayList<>();
+	    List<String> aeroportosPartida = new ArrayList<>();
+	    List<String> aeroportosDestino = new ArrayList<>();
 
-        Elements elementos = document.select(DIV_DURACAO_VOO);
-        for (Element elemento : elementos) {
-            String duracao = null;
-            String aeroportoDePartida = null;
-            String aeroportoDestino = null;
+	    // Substitua 'seletor' pelo seletor CSS apropriado.
+	    List<ElementHandle> elementos = page.querySelectorAll(DIV_DURACAO_VOO);
 
-            String duracaoText = elemento.text();
+	    for (ElementHandle elemento : elementos) {
+	        String duracao = null;
+	        String aeroportoDePartida = null;
+	        String aeroportoDestino = null;
 
-            // Verifica se o texto contém a palavra "min" (indicando duração em minutos).
-            int indiceMin = duracaoText.indexOf("min");
-            
-            if (indiceMin != -1) {
-                // Obtém a duração em minutos.
-                duracao = duracaoText.substring(0, indiceMin + 3).trim();
-            } else {
-                // Verifica se o texto contém a palavra "h" (indicando duração em horas).
-                int indiceHoras = duracaoText.indexOf("h");
+	        String duracaoText = elemento.innerText();
 
-                if (indiceHoras != -1) {
-                    // Obtém a duração em horas.
-                    duracao = duracaoText.substring(0, indiceHoras + 1).trim();
-                }
-            }
+	        // Verifica se o texto contém a palavra "min" (indicando duração em minutos).
+	        int indiceMin = duracaoText.indexOf("min");
 
-            // Verifica se o texto contém um traço (indicando aeroportos de partida e destino).
-            int indiceTraco = duracaoText.indexOf("–");
+	        if (indiceMin != -1) {
+	            // Obtém a duração em minutos.
+	            duracao = duracaoText.substring(0, indiceMin + 3).trim();
+	        } else {
+	            // Verifica se o texto contém a palavra "h" (indicando duração em horas).
+	            int indiceHoras = duracaoText.indexOf("h");
 
-            if (indiceTraco != -1) {
-                // Obtém os aeroportos de partida e destino com base no traço.
-                aeroportoDePartida = duracaoText.substring(indiceMin + 3, indiceTraco).trim();
-                aeroportoDestino = duracaoText.substring(indiceTraco + 1).trim();
-            }
+	            if (indiceHoras != -1) {
+	                // Obtém a duração em horas.
+	                duracao = duracaoText.substring(0, indiceHoras + 1).trim();
+	            }
+	        }
 
-            duracoes.add(duracao);
-            aeroportosPartida.add(aeroportoDePartida);
-            aeroportosDestino.add(aeroportoDestino);
-        }
+	        // Verifica se o texto contém um traço (indicando aeroportos de partida e destino).
+	        int indiceTraco = duracaoText.indexOf("–");
 
-        LOGGER.info("Duração total: {}", duracoes);
-        LOGGER.info("Aeroporto de partida: {}", aeroportosPartida);
-        LOGGER.info("Aeroporto de destino: {}", aeroportosDestino);
+	        if (indiceTraco != -1) {
+	            // Obtém os aeroportos de partida e destino com base no traço.
+	            aeroportoDePartida = duracaoText.substring(indiceMin + 3, indiceTraco).trim();
+	            aeroportoDestino = duracaoText.substring(indiceTraco + 1).trim();
+	        }
 
-        return duracoes;
-    }
+	        duracoes.add(duracao);
+	        aeroportosPartida.add(aeroportoDePartida);
+	        aeroportosDestino.add(aeroportoDestino);
+	    }
+
+	    LOGGER.info("Duração total: {}", duracoes);
+	    LOGGER.info("Aeroporto de partida: {}", aeroportosPartida);
+	    LOGGER.info("Aeroporto de destino: {}", aeroportosDestino);
+
+	    return duracoes;
+	}
 
     public List<String> obtemCarbonoVoo(Document document) {
         List<String> carbonos = new ArrayList<>();
