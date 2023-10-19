@@ -53,8 +53,8 @@ public class ScrapingUtil {
 		String dataIda = "19/10/2023";
 		String dataVolta= "24/11/2023";
 		
-		//String url =  agrupaUrlSomenteIda(saida, chegada, dataIda);
-		String url = agrupaUrlIdaEVolta(saida,chegada,dataIda,dataVolta);
+		String url =  agrupaUrlSomenteIda(saida, chegada, dataIda);
+		//String url = agrupaUrlIdaEVolta(saida,chegada,dataIda,dataVolta);
 		ScrapingUtil scraping = new ScrapingUtil();
 		scraping.obtemInfoVoo(url);
 	}
