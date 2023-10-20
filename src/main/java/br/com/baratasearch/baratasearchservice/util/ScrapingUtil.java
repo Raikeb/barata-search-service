@@ -218,7 +218,7 @@ public class ScrapingUtil {
 	    List<String> companhias = new ArrayList<>();
 
 	    // Selecione os elementos
-	    List<ElementHandle> elementos = page.querySelectorAll("div.sSHqwe.tPgKwe.ogfYpf");
+	    List<ElementHandle> elementos = page.querySelectorAll(DIV_COMPANHIAS);
 	    for (ElementHandle elemento : elementos) {
 	        String companhia = "";
 	        // Selecione os spans dentro do elemento
