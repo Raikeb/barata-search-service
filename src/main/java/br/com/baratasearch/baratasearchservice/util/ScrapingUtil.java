@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.text.ParseException;
 
 import org.jsoup.Jsoup;
@@ -53,6 +54,7 @@ public class ScrapingUtil {
 	//DIVS DA PÁGINA
 	private static final String DIV_LOGO_COMPANHIAS = "div.EbY4Pc.P2UJoe";
 	private static final String DIV_COMPANHIAS = "div.sSHqwe.tPgKwe.ogfYpf";
+	private static final String DIV_HORARIOS = "div.zxVSec.YMlIz.tPgKwe.ogfYpf";
 	private static final String DIV_ESCALAS = "div.sSHqwe.tPgKwe.ogfYpf";
 	private static final String DIV_STATUS_VOO = "div.EfT7Ae.AdWm1c.tPgKwe";
 	private static final String DIV_DURACAO_VOO = "div.Ak5kof";
@@ -61,8 +63,8 @@ public class ScrapingUtil {
 	
 	public static void main(String[] args) throws InterruptedException {  
 		//String url = BASE_URL_GOOGLE_FLIGHT + "Flights%20to%20JFK%20from%20SSA%20on%202023-10-19" +COMPLEMENTO_URL_IDA_E_VOLTA+"2023-11-24"+ COMPLEMENTO_URL_MOEDA_BRL + COMPLEMENTO_URL_IDIOMA;
-		String saida = "galeão";
-		String chegada = "TNR";
+		String saida = "GIG";
+		String chegada = "JFK";
 		
 		String dataIda = "20/10/2023";
 		String dataVolta= "05/11/2023";
@@ -74,36 +76,112 @@ public class ScrapingUtil {
 	}
 	
 			
-	public VoosGoogleDTO obtemInfoVoo(String url) {
-	    VoosGoogleDTO voo = new VoosGoogleDTO();
-	           
+	public List<VoosGoogleDTO> obtemInfoVoo(String url) {
+	    List<VoosGoogleDTO> voos = new ArrayList<>();
+
 	    try (Playwright playwright = Playwright.create()) {
-	    	//Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setChannel("msedge"));
-	    	Browser browser = playwright.firefox().launch();
-	    	Page page = browser.newPage();
+	        Browser browser = playwright.firefox().launch();
+	        Page page = browser.newPage();
 	        page.navigate(url);
 	        page.waitForLoadState(LoadState.NETWORKIDLE);
-	       // page.waitForLoadState(LoadState.NETWORKIDLE);
-
+	        
 	        String title = page.title();
 	        LOGGER.info("Informações de melhores Voo {}", title);//titulo da página
-	        
-	        obtemLogoCompanhiaVoo(page);
-	        obtemCompanhiaVoo(page);
-	        obtemStatusVoo(page);
-	        obtemStatusEscalasVoo(page);
-	        obtemDuracaoVoo(page);
-	        obtemCarbonoVoo(page);
-	        obtemPrecoVoo(page);
-	        
+	        List<String> logos = obtemLogoCompanhiaVoo(page);
+	        List<String> companhias = obtemCompanhiaVoo(page);
+	        List<String> status = obtemStatusVoo(page);
+	        List<String> escalas = obtemStatusEscalasVoo(page);
+	        List<String> horariosPartida = obtemHorariosPartida(page);
+	        List<String> horariosChegada = obtemHorariosChegada(page);
+	        List<String> duracoes = obtemDuracaoVoo(page);
+	        List<String> carbonos = obtemCarbonoVoo(page);
+	        List<String> precos = obtemPrecoVoo(page);
+
+	        Map<String, Integer> mapQuantidades = new HashMap<>();
+	        mapQuantidades.put("logos", logos.size());
+	        mapQuantidades.put("companhias", companhias.size());
+	        mapQuantidades.put("status", status.size());
+	        mapQuantidades.put("escalas", escalas.size());
+	        mapQuantidades.put("horariosPartida", horariosPartida.size());
+	        mapQuantidades.put("horariosChegada", horariosChegada.size());
+	        mapQuantidades.put("duracoes", duracoes.size());
+	        mapQuantidades.put("carbonos", carbonos.size());
+	        mapQuantidades.put("precos", precos.size());
+
+	        int quantidadeReferencia = logos.size();
+	        boolean todasIguais = mapQuantidades.values().stream().allMatch(quantidade -> quantidade == quantidadeReferencia);
+
+	        if (todasIguais) {
+	            LOGGER.info("Quantidade igual de elementos nas listas, foram {} voos.", quantidadeReferencia);
+
+	            for (int i = 0; i < quantidadeReferencia; i++) {
+	                VoosGoogleDTO voo = new VoosGoogleDTO();
+	                voo.setLogoCompanhia(logos.get(i));
+	                voo.setCompanhia(companhias.get(i));
+	                voo.setStatus(status.get(i));
+	                voo.setEscalas(escalas.get(i));
+	                voo.setPrevisaoPartida(horariosPartida.get(i));
+	                voo.setPrevisaoChegada(horariosChegada.get(i));
+	                voo.setDuracao(duracoes.get(i));
+	                voo.setCarbono(carbonos.get(i));
+	                voo.setPreco(precos.get(i));
+
+	                voos.add(voo);
+	            }
+	        } else {
+	            String listasDivergentes = mapQuantidades.entrySet().stream()
+	                    .filter(entry -> entry.getValue() != quantidadeReferencia)
+	                    .map(Map.Entry::getKey)
+	                    .collect(Collectors.joining(", "));
+	            LOGGER.info("A quantidade não foi igual! As listas de {} foram diferentes das demais em quantidade.", listasDivergentes);
+	        }
+	    return voos;
+	    
 	    } catch (Exception e) {
 	        LOGGER.error("Erro ao tentar conectar com o Google Flights usando Playwright -> {} ", e.getMessage());
 	        e.printStackTrace();
 	    }
-	   
-	    return voo;
+
+	    return null;
 	}
 
+
+	public List<String> obtemHorarios(Page page, String tipo) {
+	    List<String> horarios = new ArrayList<>();
+	    // Seleciona a div com a classe especificada
+	    List<ElementHandle> divs = page.querySelectorAll(DIV_HORARIOS);
+	    
+	    for (ElementHandle div : divs) {
+	        // Seleciona as spans com o atributo jscontroller="cNtv4b" dentro da div
+	        List<ElementHandle> elementos = div.querySelectorAll("span[jscontroller='cNtv4b']");
+	        
+	        for (ElementHandle elemento : elementos) {
+	            String ariaLabel = elemento.getAttribute("aria-label");
+	            if (ariaLabel != null && ariaLabel.toLowerCase().contains(tipo)) {
+	                // Adiciona um espaço entre caracteres de caixa baixa e caixa alta
+	                ariaLabel = ariaLabel.replaceAll("(\\p{Ll})(\\p{Lu})", "$1 $2");
+	                horarios.add(ariaLabel);
+	            }
+	        }
+	    }
+
+	    // Remover elementos vazios ou que contêm apenas espaços em branco
+	    horarios.removeIf(String::isBlank);
+
+	    LOGGER.info("Horarios de {}: {}", tipo, horarios);
+
+	    return horarios;
+	}
+
+	public List<String> obtemHorariosPartida(Page page) {
+	    return obtemHorarios(page, "partida");
+	}
+
+	public List<String> obtemHorariosChegada(Page page) {
+	    return obtemHorarios(page, "chegada");
+	}
+
+	
 	public List<String> obtemLogoCompanhiaVoo(Page page) {
 	    List<String> logos = new ArrayList<>();
 	    List<ElementHandle> elementos = page.querySelectorAll(DIV_LOGO_COMPANHIAS);
@@ -140,12 +218,18 @@ public class ScrapingUtil {
 	    List<String> companhias = new ArrayList<>();
 
 	    // Selecione os elementos
-	    List<ElementHandle> elementos = page.querySelectorAll(DIV_COMPANHIAS);
+	    List<ElementHandle> elementos = page.querySelectorAll("div.sSHqwe.tPgKwe.ogfYpf");
 	    for (ElementHandle elemento : elementos) {
 	        String companhia = "";
 	        // Selecione os spans dentro do elemento
 	        List<ElementHandle> spans = elemento.querySelectorAll("span");
-	        for (ElementHandle span : spans) {
+	        for (int i = 0; i < spans.size(); i++) {
+	            ElementHandle span = spans.get(i);
+	            String spanClass = span.getAttribute("class");
+	            if (spanClass != null && spanClass.equals("qeoz6e U325Rc")) {
+	                i++; // Ignora o próximo span
+	                continue;
+	            }
 	            companhia += span.innerText() + " ";
 	        }
 	        companhia = companhia.trim();
@@ -161,11 +245,31 @@ public class ScrapingUtil {
 	        if (!temPalavraRepetida && !companhia.isEmpty()) {
 	            companhias.add(companhia);
 	        }
+
+	        // Verifica o atributo aria-label
+	        ElementHandle ariaLabelElement = elemento.querySelector("[aria-label*='Passagens separadas']");
+	        if (ariaLabelElement != null) {
+	            String ariaLabel = ariaLabelElement.getAttribute("aria-label");
+	            int index = ariaLabel.indexOf(".");
+	            if (index != -1) {
+	                companhias.add(ariaLabel.substring(0, index));
+	            }
+	        }
 	    }
 
 	    LOGGER.info("Companhia aérea: {}", companhias);
 	    return companhias;
 	}
+
+
+
+
+
+
+
+
+
+
 
 	public List<String> obtemStatusEscalasVoo(Page page) {
 	    List<String> statusEscalasVoo = new ArrayList<>();
