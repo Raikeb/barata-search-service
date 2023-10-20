@@ -18,12 +18,14 @@ public class VoosGoogleDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	//informações sobre o Voo
-	private String compania;
-	private String previsaoSaida;
+	private String logoCompanhia;
+	private String companhia;
+	private String previsaoPartida;
 	private String previsaoChegada;
 	private String duracao;
-	private String statusVoo;
+	private String status;
+	private String escalas;
 	private String carbono;
-	private BigDecimal preco;
+	private String preco;
 	//sem a necessidade de definir os getters e setters pois será usado o lombok
 }
