@@ -24,6 +24,7 @@ import org.jsoup.select.Elements;
 import org.modelmapper.spi.StrongTypeConditionalConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserType;
@@ -35,6 +36,7 @@ import com.microsoft.playwright.options.LoadState;
 import br.com.baratasearch.baratasearchservice.dto.VoosGoogleDTO;
 import br.com.baratasearch.baratasearchservice.model.Aeroportos;
 
+@Service	
 public class ScrapingUtil {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ScrapingUtil.class);
@@ -59,14 +61,14 @@ public class ScrapingUtil {
 	
 	public static void main(String[] args) throws InterruptedException {  
 		//String url = BASE_URL_GOOGLE_FLIGHT + "Flights%20to%20JFK%20from%20SSA%20on%202023-10-19" +COMPLEMENTO_URL_IDA_E_VOLTA+"2023-11-24"+ COMPLEMENTO_URL_MOEDA_BRL + COMPLEMENTO_URL_IDIOMA;
-		String saida = "SSA";
-		String chegada = "GIG";
+		String saida = "galeão";
+		String chegada = "TNR";
 		
 		String dataIda = "20/10/2023";
-		String dataVolta= "24/10/2023";
+		String dataVolta= "05/11/2023";
 		
-		//String url =  agrupaUrlSomenteIda(saida, chegada, dataIda);
-		String url = agrupaUrlIdaEVolta(saida,chegada,dataIda,dataVolta);
+		String url =  agrupaUrlSomenteIda(saida, chegada, dataIda);
+		//String url = agrupaUrlIdaEVolta(saida,chegada,dataIda,dataVolta);
 		ScrapingUtil scraping = new ScrapingUtil();
 		scraping.obtemInfoVoo(url);
 	}
@@ -76,11 +78,12 @@ public class ScrapingUtil {
 	    VoosGoogleDTO voo = new VoosGoogleDTO();
 	           
 	    try (Playwright playwright = Playwright.create()) {
-	        Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setChannel("msedge"));
-	        Page page = browser.newPage();
+	    	//Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setChannel("msedge"));
+	    	Browser browser = playwright.firefox().launch();
+	    	Page page = browser.newPage();
 	        page.navigate(url);
 	        page.waitForLoadState(LoadState.NETWORKIDLE);
-	        page.waitForLoadState(LoadState.NETWORKIDLE);
+	       // page.waitForLoadState(LoadState.NETWORKIDLE);
 
 	        String title = page.title();
 	        LOGGER.info("Informações de melhores Voo {}", title);//titulo da página
@@ -92,7 +95,7 @@ public class ScrapingUtil {
 	        obtemDuracaoVoo(page);
 	        obtemCarbonoVoo(page);
 	        obtemPrecoVoo(page);
-
+	        
 	    } catch (Exception e) {
 	        LOGGER.error("Erro ao tentar conectar com o Google Flights usando Playwright -> {} ", e.getMessage());
 	        e.printStackTrace();

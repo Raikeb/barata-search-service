@@ -3,8 +3,6 @@ package br.com.baratasearch.baratasearchservice.model;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import org.apache.commons.lang3.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -279,7 +277,7 @@ public class Aeroportos {
         AEROPORTOS.put("GGT", "George Town, Bahamas – Exuma");
         AEROPORTOS.put("GHB", "Governors Harbour, Bahamas");
         AEROPORTOS.put("GIB", "Gibraltar");
-        AEROPORTOS.put("GIG", "Galeão, Rio de Janeiro RJ, Brasil – Tom Jobim Intl");
+        AEROPORTOS.put("GIG", "Galeão, Rio de Janeiro, RJ, Brasil – Tom Jobim Intl");
         AEROPORTOS.put("GLA", "Glasgow, Scotland, UK");
         AEROPORTOS.put("GNB", "Grenoble, France – St Geoirs");
         AEROPORTOS.put("GND", "St Georges/Grenada – Pt Saline");
@@ -667,7 +665,7 @@ public class Aeroportos {
         AEROPORTOS.put("SDJ", "Sendai, Japan – Sendai");
         AEROPORTOS.put("SDQ", "Sto. Domingo, Rep. Dominicana – Las Americas");
         AEROPORTOS.put("SDR", "Santander, Spain – Santander");
-        AEROPORTOS.put("SDU", "Rio De Janeiro, Brasil – Santos Dumont");
+        AEROPORTOS.put("SDU", "Rio De Janeiro, RJ, Brasil – Santos Dumont");
         AEROPORTOS.put("SEA", "Seattle, WA, USA – Seattle Tacoma Intl");
         AEROPORTOS.put("SEL", "Seoul, Korea – Kimpo International");
         AEROPORTOS.put("SEZ", "Mahe Island, Seychelles");
@@ -935,18 +933,20 @@ public class Aeroportos {
     public String getSiglaAeroporto(String query) {
         String naoAchei = "404";
         Map<String, String> matches = new HashMap<>();
-        
+
         // Se a consulta já é uma sigla existente, retorne a sigla
         if (AEROPORTOS.containsKey(query)) {
             return query;
         }
-        
+
         for (Map.Entry<String, String> entry : AEROPORTOS.entrySet()) {
-            if (entry.getValue().toLowerCase().contains(query.toLowerCase())) {
+            String airportName = entry.getValue().toLowerCase();
+            // Agora, em vez de verificar apenas o início, verificamos se a consulta está contida em qualquer parte do nome do aeroporto.
+            if (airportName.contains(query.toLowerCase())) {
                 matches.put(entry.getKey(), entry.getValue());
             }
         }
-        
+
         if (matches.size() == 1) {
             return matches.keySet().iterator().next();
         } else if (matches.size() > 1) {
