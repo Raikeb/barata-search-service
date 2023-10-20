@@ -34,13 +34,15 @@ public class Voo implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "voo_id")
 	private Long id;
-	
+		
 	@ManyToOne
-	@JoinColumn(name = "aeroporto_partida_id")
+	@JoinColumn(name = "nome_companhia_id")
+	private Companhia nomeCompanhia;
+	
+	@Column(name = "aeroporto_partida")
 	private String aeroportoPartida;
-	
-	@ManyToOne
-	@JoinColumn(name = "aeroporto_destino_id")
+		
+	@Column(name = "aeroporto_destino")
 	private String aeroportoDestino;
 	
 	@Column (name = "previsao_partida_voo")
