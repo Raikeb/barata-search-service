@@ -61,19 +61,19 @@ public class ScrapingUtil {
 	private static final String DIV_CARBONO_VOO = "div.y0NSEe.V1iAHe.tPgKwe.ogfYpf";
 	private static final String DIV_PRECO_VOO = "div.U3gSDe";
 	
-	public static void main(String[] args) throws InterruptedException {  
-		//String url = BASE_URL_GOOGLE_FLIGHT + "Flights%20to%20JFK%20from%20SSA%20on%202023-10-19" +COMPLEMENTO_URL_IDA_E_VOLTA+"2023-11-24"+ COMPLEMENTO_URL_MOEDA_BRL + COMPLEMENTO_URL_IDIOMA;
-		String saida = "GIG";
-		String chegada = "JFK";
-		
-		String dataIda = "20/10/2023";
-		String dataVolta= "05/11/2023";
-		
-		String url =  agrupaUrl(saida, chegada, dataIda, dataVolta);
-		//String url = agrupaUrlIdaEVolta(saida,chegada,dataIda,dataVolta);
-		ScrapingUtil scraping = new ScrapingUtil();
-		scraping.obtemInfoVoo(url);
-	}
+//	public static void main(String[] args) throws InterruptedException {  
+//		//String url = BASE_URL_GOOGLE_FLIGHT + "Flights%20to%20JFK%20from%20SSA%20on%202023-10-19" +COMPLEMENTO_URL_IDA_E_VOLTA+"2023-11-24"+ COMPLEMENTO_URL_MOEDA_BRL + COMPLEMENTO_URL_IDIOMA;
+//		String saida = "GIG";
+//		String chegada = "HEL";
+//		
+//		String dataIda = "20/10/2023";
+//		String dataVolta= "05/11/2023";
+//		
+//		String url =  agrupaUrl(saida, chegada, dataIda, dataVolta);
+//		//String url = agrupaUrlIdaEVolta(saida,chegada,dataIda,dataVolta);
+//		ScrapingUtil scraping = new ScrapingUtil();
+//		scraping.obtemInfoVoo(url);
+//	}
 	
 			
 	public List<VoosGoogleDTO> obtemInfoVoo(String url) {
