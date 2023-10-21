@@ -1,6 +1,6 @@
 package br.com.baratasearch.baratasearchservice.util;
 
-public enum CompanhiasAereas {
+public enum CompanhiaAerea {
 	
 
 }
