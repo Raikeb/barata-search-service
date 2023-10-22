@@ -34,7 +34,7 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.options.LoadState;
 
-import br.com.baratasearch.baratasearchservice.dto.VoosGoogleDTO;
+import br.com.baratasearch.baratasearchservice.dto.VooGoogleDTO;
 import br.com.baratasearch.baratasearchservice.model.Aeroportos;
 
 @Service	
@@ -76,8 +76,8 @@ public class ScrapingUtil {
 //	}
 	
 			
-	public List<VoosGoogleDTO> obtemInfoVoo(String url) {
-	    List<VoosGoogleDTO> voos = new ArrayList<>();
+	public List<VooGoogleDTO> obtemInfoVoo(String url) {
+	    List<VooGoogleDTO> voos = new ArrayList<>();
 
 	    try (Playwright playwright = Playwright.create()) {
 	        Browser browser = playwright.firefox().launch();
@@ -115,7 +115,7 @@ public class ScrapingUtil {
 	            LOGGER.info("Quantidade igual de elementos nas listas, foram {} voos.", quantidadeReferencia);
 
 	            for (int i = 0; i < quantidadeReferencia; i++) {
-	                VoosGoogleDTO voo = new VoosGoogleDTO();
+	                VooGoogleDTO voo = new VooGoogleDTO();
 	                voo.setLogoCompanhia(logos.get(i));
 	                voo.setCompanhia(companhias.get(i));
 	                voo.setStatus(status.get(i));
