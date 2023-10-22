@@ -5,7 +5,7 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -65,11 +65,10 @@ public class Voo implements Serializable{
 	
 	@Column (name = "preco_voo")
 	private String preco;
-	
-	@ApiModelProperty(example = "dd/MM/yyyy HH:mm")
-	@JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Sao_Paulo")
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column (name = "data_hora_requisicao")
-	private Date dataHoraRequisicao;
-	
+
+    @Schema(example = "dd/MM/yyyy HH:mm", description = "Data e hora da requisição")
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Sao_Paulo")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column (name = "data_hora_requisicao")
+    private Date dataHoraRequisicao;	
 }
