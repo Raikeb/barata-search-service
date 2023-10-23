@@ -45,7 +45,7 @@ public class AeroportoController {
 
 	})
 	@GetMapping("/{id}")
-	public ResponseEntity<Aeroporto> buscarCompanhiaId(@PathVariable("id") Long id) {
+	public ResponseEntity<Aeroporto> buscarAeroportoId(@PathVariable("id") Long id) {
 		return ResponseEntity.ok().body(aeroportoService.buscarAeroportoId(id));
 	}
 	

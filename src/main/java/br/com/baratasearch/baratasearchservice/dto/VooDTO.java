@@ -1,7 +1,7 @@
 package br.com.baratasearch.baratasearchservice.dto;
 
 import java.io.Serializable;
-
+import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,7 +22,7 @@ public class VooDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@NotBlank
-	private String nomeAeroportoSaida;
+	private String nomeAeroportoPartida;
 
 	@NotBlank
 	private String nomeAeroportoDestino;
@@ -48,6 +48,6 @@ public class VooDTO implements Serializable {
 	@NotNull
 	@Schema(example = "dd/mm/yyyy hh:mm", description = "Data e hora do Voo")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm", timezone = "America/Sao_Paulo")
-	private String dataHoraVoo;
+	private Date dataHoraVoo;
 
 }

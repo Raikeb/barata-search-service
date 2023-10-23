@@ -35,8 +35,8 @@ public class Voo implements Serializable{
 	@Column(name = "voo_id")
 	private Long id;
 		
-	@Column(name = "nome_companhia")
-	private String nomeCompanhia;
+	@Column(name = "companhia_voo")
+	private String companhia;
 	
 	@ManyToOne
 	@JoinColumn(name = "sigla_aeroporto_partida_id")
@@ -70,6 +70,6 @@ public class Voo implements Serializable{
     @Schema(example = "dd/MM/yyyy HH:mm", description = "Data e hora da requisição")
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Sao_Paulo")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column (name = "data_hora_requisicao")
-    private Date dataHoraRequisicao;	
+    @Column (name = "data_hora_voo")
+    private Date dataHoraVoo;	
 }

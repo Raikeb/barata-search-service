@@ -10,7 +10,6 @@ import br.com.baratasearch.baratasearchservice.entity.Aeroporto;
 import br.com.baratasearch.baratasearchservice.exception.BadRequestException;
 import br.com.baratasearch.baratasearchservice.exception.NotFoundException;
 import br.com.baratasearch.baratasearchservice.repository.AeroportoRepository;
-import jakarta.validation.Valid;
 
 @Service
 public class AeroportoService {
@@ -53,7 +52,7 @@ public class AeroportoService {
 		
 	}
 
-	public void alterarAeroporto(Long id, @Valid AeroportoDTO dto) {
+	public void alterarAeroporto(Long id, AeroportoDTO dto) {
 		boolean exists = aeroportoRepository.existsById(id);
 		
 		if (!exists) {
