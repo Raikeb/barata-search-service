@@ -18,5 +18,8 @@ public class AeroportoDTO implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	@NotBlank
+	private String siglaAeroporto;
+	
+	@NotBlank
 	private String nomeAeroporto;
 }

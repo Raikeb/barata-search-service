@@ -39,12 +39,12 @@ public class Voo implements Serializable{
 	private String nomeCompanhia;
 	
 	@ManyToOne
-	@JoinColumn(name = "aeroporto_partida_id")
-	private Aeroporto aeroportoPartida;
+	@JoinColumn(name = "sigla_aeroporto_partida_id")
+	private Aeroporto siglaAeroportoPartida;
 	
 	@ManyToOne
-	@JoinColumn(name = "aeroporto_destino_id")
-	private Aeroporto aeroportoDestino;
+	@JoinColumn(name = "sigla_aeroporto_destino_id")
+	private Aeroporto siglaAeroportoDestino;
 	
 	@Column (name = "previsao_partida_voo")
 	private String previsaoPartida;

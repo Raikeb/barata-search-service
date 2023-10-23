@@ -27,7 +27,10 @@ public class Aeroporto implements Serializable{
 	@Column(name = "aeroporto_id")
 	private Long id;
 	
+	@Column(name = "sigla_aeroporto")
+	private String siglaAeroporto;
+	
 	@Column(name = "nome_aeroporto")
-	private String nomeCompanhia;
+	private String nomeAeroporto;
 			
 }
