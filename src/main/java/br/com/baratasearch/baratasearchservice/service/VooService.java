@@ -1,18 +1,29 @@
 package br.com.baratasearch.baratasearchservice.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import br.com.baratasearch.baratasearchservice.dto.VooDTO;
 import br.com.baratasearch.baratasearchservice.dto.VooGoogleDTO;
 import br.com.baratasearch.baratasearchservice.dto.VooResponseDTO;
+import br.com.baratasearch.baratasearchservice.entity.Aeroporto;
 import br.com.baratasearch.baratasearchservice.entity.Voo;
 import br.com.baratasearch.baratasearchservice.exception.BadRequestException;
 import br.com.baratasearch.baratasearchservice.exception.NotFoundException;
 import br.com.baratasearch.baratasearchservice.repository.VooRepository;
+import br.com.baratasearch.baratasearchservice.util.StatusVoo;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Service
 public class VooService {
@@ -77,7 +88,7 @@ public class VooService {
 	    for (VooGoogleDTO vooGoogle : vooGoogleList) {
 	        Voo novoVoo = new Voo();
 	        novoVoo.setLogoCompanhia(vooGoogle.getLogoCompanhia());
-	        novoVoo.setCompanhia(vooGoogle.getCompanhia());
+	        novoVoo.setCompanhia(vooGoogle.getCompanhia());	        
 	        novoVoo.setPrevisaoPartida(vooGoogle.getPrevisaoPartida());
 	        novoVoo.setPrevisaoChegada(vooGoogle.getPrevisaoChegada());
 	        novoVoo.setDuracao(vooGoogle.getDuracao());
@@ -85,8 +96,10 @@ public class VooService {
 	        novoVoo.setEscalas(vooGoogle.getEscalas());
 	        novoVoo.setCarbono(vooGoogle.getCarbono());
 	        novoVoo.setPreco(vooGoogle.getPreco());
-
+	        novoVoo.setMomentoVoo(vooGoogle.getMomentoVoo());
+	        
 	        salvarVoo(novoVoo);
+          
 	    }
 	}
 
