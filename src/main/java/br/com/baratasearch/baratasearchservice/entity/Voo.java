@@ -34,7 +34,10 @@ public class Voo implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "voo_id")
 	private Long id;
-		
+	
+	@Column(name = "logo_companhia_voo")
+	private String logoCompanhia;
+	
 	@Column(name = "companhia_voo")
 	private String companhia;
 	
@@ -45,6 +48,12 @@ public class Voo implements Serializable{
 	@ManyToOne
 	@JoinColumn(name = "sigla_aeroporto_destino_id")
 	private Aeroporto siglaAeroportoDestino;
+	
+	@Column(name = "data_voo_partida")//auxiliar
+	private String dataVooPartida;
+	
+	@Column(name = "data_voo_destino")//auxiliar
+	private String dataVooDestino;
 	
 	@Column (name = "previsao_partida_voo")
 	private String previsaoPartida;
@@ -72,4 +81,7 @@ public class Voo implements Serializable{
     @Temporal(TemporalType.TIMESTAMP)
     @Column (name = "data_hora_voo")
     private Date dataHoraVoo;	
+    
+    @Column (name = "momento_voo")
+    private String momentoVoo; 
 }

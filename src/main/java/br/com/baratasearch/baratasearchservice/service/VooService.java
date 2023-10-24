@@ -1,10 +1,13 @@
 package br.com.baratasearch.baratasearchservice.service;
 
+import java.util.List;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.baratasearch.baratasearchservice.dto.VooDTO;
+import br.com.baratasearch.baratasearchservice.dto.VooGoogleDTO;
 import br.com.baratasearch.baratasearchservice.dto.VooResponseDTO;
 import br.com.baratasearch.baratasearchservice.entity.Voo;
 import br.com.baratasearch.baratasearchservice.exception.BadRequestException;
@@ -69,5 +72,33 @@ public class VooService {
 		voo.setDataHoraVoo(dto.getDataHoraVoo());
 		salvarVoo(voo);	
 	}
+
+	public void atualizaVoo(Voo voo, List<VooGoogleDTO> vooGoogleList) {
+	    for (VooGoogleDTO vooGoogle : vooGoogleList) {
+	        Voo novoVoo = new Voo();
+	        novoVoo.setLogoCompanhia(vooGoogle.getLogoCompanhia());
+	        novoVoo.setCompanhia(vooGoogle.getCompanhia());
+	        novoVoo.setPrevisaoPartida(vooGoogle.getPrevisaoPartida());
+	        novoVoo.setPrevisaoChegada(vooGoogle.getPrevisaoChegada());
+	        novoVoo.setDuracao(vooGoogle.getDuracao());
+	        novoVoo.setStatus(vooGoogle.getStatus());
+	        novoVoo.setEscalas(vooGoogle.getEscalas());
+	        novoVoo.setCarbono(vooGoogle.getCarbono());
+	        novoVoo.setPreco(vooGoogle.getPreco());
+
+	        salvarVoo(novoVoo);
+	    }
+	}
+
+	public List<Voo> listarVoosPeriodo() {		
+		return vooRepository.listarVoosPeriodo();
+	}
+
+	public Integer buscarQuantidadeVoosPeriodo() {		
+		return vooRepository.buscarQuantidadeVoosPeriodo();
+	}
+
+
+
 
 }

@@ -2,7 +2,9 @@ package br.com.baratasearch.baratasearchservice.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
+import br.com.baratasearch.baratasearchservice.util.StatusVoo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +20,12 @@ public class VooGoogleDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	//informações sobre o Voo
+	private StatusVoo temOuNaoVoos;
+	private String momentoVoo;
+	private String dataVooPartida;//dataVooPartida e dataVooDestino definidos como String para facilitar o uso
+	private String dataVooDestino;
+	private String aeroportoPartida;
+	private String aeroportoDestino;	
 	private String logoCompanhia;
 	private String companhia;
 	private String previsaoPartida;
