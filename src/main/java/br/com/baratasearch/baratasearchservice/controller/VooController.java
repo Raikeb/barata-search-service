@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -19,6 +20,7 @@ import br.com.baratasearch.baratasearchservice.entity.Voo;
 import br.com.baratasearch.baratasearchservice.exception.StandardError;
 import br.com.baratasearch.baratasearchservice.service.VooService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -67,25 +69,33 @@ public class VooController {
 	
 	@Operation(summary = "Inserir voo")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(implementation = Voo.class))),
-			@ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = StandardError.class))),
-			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = StandardError.class))),
-			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = StandardError.class))),
-			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(implementation = StandardError.class))),
-			@ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = StandardError.class)))
-
-	})	
+	    @ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(implementation = Voo.class))),
+	    @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = StandardError.class))),
+	    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = StandardError.class))),
+	    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = StandardError.class))),
+	    @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(implementation = StandardError.class))),
+	    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = StandardError.class)))
+	})  
 	@PostMapping
-	public ResponseEntity<Voo> inserirVoo(@Valid @RequestBody VooDTO dto){
-		Voo voo = vooService.inserirVoo(dto);
-		URI location = ServletUriComponentsBuilder
-				.fromCurrentRequest()
-				.path("/{id}")
-				.buildAndExpand(voo.getId()).toUri();
-		
-		return ResponseEntity.created(location).body(voo);
+	public ResponseEntity<Voo> inserirVoo(
+	    @Valid @RequestBody VooDTO dto,
+	    @Parameter(description = "Data de partida", required = true) @RequestParam String dataPartida,
+	    @Parameter(description = "Data de destino", required = false) @RequestParam(required = false) String dataDestino
+	) {
+	    Voo voo;
+	    if (dataDestino == null) {
+	        voo = vooService.inserirVooIda(dto, dataPartida);
+	    } else {
+	        voo = vooService.inserirVooIdaEvolta(dto, dataPartida, dataDestino);
+	    }
+	    URI location = ServletUriComponentsBuilder
+	        .fromCurrentRequest()
+	        .path("/{id}")
+	        .buildAndExpand(voo.getId()).toUri();
+
+	    return ResponseEntity.created(location).body(voo);
 	}
-	
+
 	@Operation(summary = "Alterar voo")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "204", description = "No Content", content = @Content(schema = @Schema(implementation = Void.class))),

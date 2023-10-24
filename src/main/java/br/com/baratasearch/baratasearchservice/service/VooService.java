@@ -52,14 +52,23 @@ public class VooService {
 		return voos;
 	}
 
-	public Voo inserirVoo(VooDTO dto) {
-		Voo voo = modelMapper.map(dto, Voo.class);
-		voo.setSiglaAeroportoPartida(aeroportoService.buscarAeroportoSigla(dto.getNomeAeroportoPartida()));
-		voo.setSiglaAeroportoDestino(aeroportoService.buscarAeroportoSigla(dto.getNomeAeroportoDestino()));
-							
-		return salvarVoo(voo);	
-		
+	private Voo inserirVoo(VooDTO dto, String dataPartida, String dataDestino) {
+	    Voo voo = modelMapper.map(dto, Voo.class);
+	    voo.setSiglaAeroportoPartida(aeroportoService.buscarAeroportoSigla(dto.getNomeAeroportoPartida()));
+	    voo.setSiglaAeroportoDestino(aeroportoService.buscarAeroportoSigla(dto.getNomeAeroportoDestino()));
+	    voo.setDataVooPartida(dataPartida);	
+	    voo.setDataVooDestino(dataDestino);					
+	    return salvarVoo(voo);	
 	}
+
+	public Voo inserirVooIda(VooDTO dto, String dataPartida) {
+	    return inserirVoo(dto, dataPartida, null);
+	}
+
+	public Voo inserirVooIdaEvolta(VooDTO dto, String dataPartida, String dataDestino) {
+	    return inserirVoo(dto, dataPartida, dataDestino);
+	}
+
 	
 	private Voo salvarVoo(Voo voo) {
 		return vooRepository.save(voo);
