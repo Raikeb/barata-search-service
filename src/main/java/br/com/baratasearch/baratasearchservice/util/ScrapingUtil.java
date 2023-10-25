@@ -63,10 +63,10 @@ public class ScrapingUtil {
 //		// "Flights%20to%20JFK%20from%20SSA%20on%202023-10-19"
 //		// +COMPLEMENTO_URL_IDA_E_VOLTA+"2023-11-24"+ COMPLEMENTO_URL_MOEDA_BRL +
 //		// COMPLEMENTO_URL_IDIOMA;
-//		String saida = "GIG";
-//		String chegada = "FIH";
+//		String saida = "SDU";
+//		String chegada = "SSA";
 //
-//		String dataIda = "24/10/2023";
+//		String dataIda = "25/10/2023";
 //		String dataVolta = "05/11/2023";
 //
 //		String url = agrupaUrl(saida, chegada, dataIda, null);

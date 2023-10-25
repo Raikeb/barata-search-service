@@ -1,5 +1,9 @@
 package br.com.baratasearch.baratasearchservice.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,6 +13,7 @@ import br.com.baratasearch.baratasearchservice.dto.AeroportoResponseDTO;
 import br.com.baratasearch.baratasearchservice.entity.Aeroporto;
 import br.com.baratasearch.baratasearchservice.exception.BadRequestException;
 import br.com.baratasearch.baratasearchservice.exception.NotFoundException;
+import br.com.baratasearch.baratasearchservice.model.Aeroportos;
 import br.com.baratasearch.baratasearchservice.repository.AeroportoRepository;
 
 @Service
@@ -63,4 +68,26 @@ public class AeroportoService {
 		aeroportoRepository.save(aeroporto);
 	}
 
+	public void inserirAeroportos(List<AeroportoDTO> aeroportos) {
+        for (AeroportoDTO aeroporto : aeroportos) {
+            inserirAeroporto(aeroporto);
+        }
+    }
+	
+	public List<AeroportoDTO> listarAeroportosPreSalvos() {
+        List<AeroportoDTO> aeroportosDTO = new ArrayList<>();
+
+        for (Map.Entry<String, String> entry : Aeroportos.AEROPORTOS.entrySet()) {
+            AeroportoDTO aeroportoDTO = new AeroportoDTO();
+            aeroportoDTO.setSiglaAeroporto(entry.getKey());
+            aeroportoDTO.setNomeAeroporto(entry.getValue());
+            aeroportosDTO.add(aeroportoDTO);
+        }
+
+        return aeroportosDTO;
+    }
+	
+	public List<Aeroporto> listarAeroportosBrasileiros(){
+		return aeroportoRepository.listarAeroportosBrasileiros();		
+	}
 }

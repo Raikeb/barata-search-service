@@ -1,6 +1,7 @@
 package br.com.baratasearch.baratasearchservice.controller;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ import jakarta.validation.Valid;
 
 @Tag(name = "API de Aeroportos")
 @RestController
-@RequestMapping("/api/v1/companhias")
+@RequestMapping("/api/v1/aeroportos")
 public class AeroportoController {
 
 	@Autowired
@@ -62,6 +63,22 @@ public class AeroportoController {
 	@GetMapping
 	public ResponseEntity<AeroportoResponseDTO> listarAeroportos(){
 		return ResponseEntity.ok().body(aeroportoService.listarAeroportos());
+		
+	}
+	
+	@Operation(summary = "Listar aeroportos brasileiros")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = AeroportoResponseDTO.class))),
+			@ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = StandardError.class))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = StandardError.class))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = StandardError.class))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(implementation = StandardError.class))),
+			@ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = StandardError.class)))
+
+	})
+	@GetMapping("/brasileiros")	
+	public ResponseEntity<List<Aeroporto>> listarAeroportosBrasileiros(){
+		return ResponseEntity.ok().body(aeroportoService.listarAeroportosBrasileiros());
 		
 	}
 	

@@ -24,8 +24,7 @@ public interface VooRepository extends JpaRepository<Voo, Long> {
 	
 	@Query(name = "buscar_quantidade_partidas_periodo",
 		       value = "SELECT COUNT(*) FROM voo AS p " 
-		             + "WHERE p.data_hora_voo BETWEEN DATEADD(HOUR, -3, CURRENT_TIMESTAMP) AND CURRENT_TIMESTAMP " 
-		              + "AND ifnull(p.momento_voo, 'Vazio') != 'O voo já ocorreu.' ",
+		             + "WHERE p.data_hora_voo BETWEEN DATEADD(HOUR, -3, CURRENT_TIMESTAMP) AND CURRENT_TIMESTAMP ",
 		       nativeQuery = true)
 		public Integer buscarQuantidadeVoosPeriodo();
 
