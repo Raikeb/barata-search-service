@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import java.util.ArrayList;
+import br.com.baratasearch.baratasearchservice.entity.Voo;
 import br.com.baratasearch.baratasearchservice.util.StatusVoo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,8 +24,8 @@ public class VooGoogleDTO implements Serializable {
 	//informações sobre o Voo
 	private StatusVoo temOuNaoVoos;
 	private String momentoVoo;
-	private String dataVooPartida;//dataVooPartida e dataVooDestino definidos como String para facilitar o uso
-	private String dataVooDestino;
+	private String dataVooPartida;//dataVooPartida e dataVooRetorno definidos como String para facilitar o uso
+	private String dataVooRetorno;
 	private String aeroportoPartida;
 	private String aeroportoDestino;	
 	private String logoCompanhia;
@@ -36,4 +38,12 @@ public class VooGoogleDTO implements Serializable {
 	private String carbono;
 	private String preco;
 	//sem a necessidade de definir os getters e setters pois será usado o lombok
+	
+    public static ArrayList<VooGoogleDTO> defineVoos(ArrayList<VooGoogleDTO> listaVoos, VooGoogleDTO voos) {
+
+
+    	listaVoos.add(voos);
+
+	    return listaVoos;
+	}
 }

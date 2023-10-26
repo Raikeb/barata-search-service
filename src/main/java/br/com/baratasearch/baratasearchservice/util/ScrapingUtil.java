@@ -14,6 +14,7 @@ import java.text.ParseException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.microsoft.playwright.Browser;
@@ -28,7 +29,11 @@ import br.com.baratasearch.baratasearchservice.model.Aeroportos;
 @Service
 public class ScrapingUtil {
 
+	@Autowired
+	private DataUtil dataUtil;
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(ScrapingUtil.class);
+
 	// MONTAGEM DA URL
 	private static final String BASE_URL_GOOGLE_FLIGHT = "https://www.google.com/travel/flights?q=";
 	private static String URL_COMPLETA_GOOGLE_FLIGHT = "";
@@ -53,9 +58,12 @@ public class ScrapingUtil {
 	public List<String> aeroPartida;
 	public List<String> aeroDestino;
 
+	ArrayList<VooGoogleDTO> listaVoosDefinidos = new ArrayList<>();
+
 	// variaveis auxiliares
-	public String auxDataPartida;//botar static auxDataPartida e auxDataDestino para teste local  pela main como java application
-	public String auxDataDestino;
+	public String auxDataPartida;// botar static auxDataPartida e auxDataRetorno para teste local pela main como java application
+	public List<String> auxHorasPartida;								
+	public String auxDataRetorno;
 	public boolean auxVoo;
 
 //	public static void main(String[] args) throws InterruptedException {
@@ -69,11 +77,42 @@ public class ScrapingUtil {
 //		String dataIda = "25/10/2023";
 //		String dataVolta = "05/11/2023";
 //
-//		String url = agrupaUrl(saida, chegada, dataIda, null);
-//		//String url = agrupaUrl(saida, chegada, dataIda, dataVolta);
+//		//String url = agrupaUrl(saida, chegada, dataIda, null);
+//		String url = agrupaUrl(saida, chegada, dataIda, dataVolta);
 //		ScrapingUtil scraping = new ScrapingUtil();
 //		scraping.obtemInfoVoo(url);
 //	}
+
+	public ArrayList<VooGoogleDTO> consultaVoosDefinidos(List<VooGoogleDTO> infosObtidas,
+			ArrayList<VooGoogleDTO> voosDefinidos) throws Exception {		
+		try {
+			for (VooGoogleDTO infoObtida : infosObtidas) {
+
+				VooGoogleDTO vooGoogleDTO = new VooGoogleDTO();
+				vooGoogleDTO.setMomentoVoo(infoObtida.getMomentoVoo());
+				vooGoogleDTO.setAeroportoDestino(infoObtida.getAeroportoDestino());
+				vooGoogleDTO.setDataVooPartida(infoObtida.getDataVooPartida());
+				vooGoogleDTO.setDataVooRetorno(infoObtida.getDataVooRetorno());
+				vooGoogleDTO.setAeroportoPartida(infoObtida.getAeroportoPartida());
+				vooGoogleDTO.setLogoCompanhia(infoObtida.getLogoCompanhia());
+				vooGoogleDTO.setCompanhia(infoObtida.getCompanhia());
+				vooGoogleDTO.setPrevisaoPartida(infoObtida.getPrevisaoPartida());
+				vooGoogleDTO.setPrevisaoChegada(infoObtida.getPrevisaoChegada());
+				vooGoogleDTO.setDuracao(infoObtida.getDuracao());
+				vooGoogleDTO.setStatus(infoObtida.getStatus());
+				vooGoogleDTO.setEscalas(infoObtida.getEscalas());
+				vooGoogleDTO.setCarbono(infoObtida.getCarbono());
+				vooGoogleDTO.setPreco(infoObtida.getPreco());
+
+				voosDefinidos = VooGoogleDTO.defineVoos(listaVoosDefinidos, vooGoogleDTO);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			LOGGER.error("\nErro ao tentar definir voos:\n {}", e);
+		}
+
+		return voosDefinidos;
+	}
 
 	public List<VooGoogleDTO> obtemInfoVoo(String url) {
 		List<VooGoogleDTO> voos = new ArrayList<>();
@@ -86,34 +125,51 @@ public class ScrapingUtil {
 
 			String title = page.title();
 			LOGGER.info("Informações de melhores Voo {}", title);// titulo da página
-
+			
+			//auxHorasPartida.clear();
+			
 			StatusVoo paginaTemVoos = verificaVoo(page);
-			List<String> dataPartida = obtemDataVooPartida(page, auxDataPartida);
-			List<String> dataDestino = obtemDataVooDestino(page, auxDataDestino);
-			List<String> aeroportoPartida = obtemAeroportosPartida(page);
-			List<String> aeroportoDestino = obtemAeroportosDestino(page);
-			List<String> momentoVoo = obtemMomentoVoo(page);
 			List<String> logos = obtemLogoCompanhiaVoo(page);
+			LOGGER.info("Logo da companhia aérea: {}", logos);// nessa posição e não na ordem para pegar corretamente
+			List<String> dataPartida = obtemDataVooPartida(page, auxDataPartida);
+			LOGGER.info("Data e hora de partida: {}", dataPartida);
+			//auxHorasPartida = readicionarApenasHoras(dataPartida);//auxiliar para pegar apenas horas;
+			List<String> dataRetorno = obtemDataVooRetorno(page, auxDataRetorno);
+			LOGGER.info("Data de retorno: {}", dataRetorno);
+			List<String> aeroportoPartida = obtemAeroportosPartida(page);
+			LOGGER.info("Aeroporto de partida: {}", aeroportoPartida);
+			List<String> aeroportoDestino = obtemAeroportosDestino(page);
+			LOGGER.info("Aeroporto de destino: {}", aeroportoDestino);
+			List<String> momentoVoo = obtemMomentoVoo(page);
+			LOGGER.info("Situação se ocorreu voo: {}", momentoVoo);
 			List<String> companhias = obtemCompanhiaVoo(page);
+			LOGGER.info("Companhia aérea: {}", companhias);
 			List<String> status = obtemStatusVoo(page);
+			LOGGER.info("Status: {}", status);
 			List<String> escalas = obtemStatusEscalasVoo(page);
+			LOGGER.info("Escalas: {}", escalas);
 			List<String> horariosPartida = obtemHorariosPartida(page);
+			LOGGER.info("Horarios de Partida: {}", horariosPartida);
 			List<String> horariosChegada = obtemHorariosChegada(page);
+			LOGGER.info("Horarios de Chegada: {}", horariosChegada);
 			List<String> duracoes = obtemDuracaoVoo(page);
+			LOGGER.info("Duração total: {}", duracoes);
 			List<String> carbonos = obtemCarbonoVoo(page);
+			LOGGER.info("Emissão de carbono: {}", carbonos);
 			List<String> precos = obtemPrecoVoo(page);
+			LOGGER.info("Preço: {}", precos);
 
 			for (int i = 0; i < logos.size(); i++) {
 				VooGoogleDTO voo = new VooGoogleDTO();
 				voo.setTemOuNaoVoos(paginaTemVoos);
 				voo.setDataVooPartida(dataPartida.get(i));
-				voo.setDataVooDestino(dataDestino.get(i));
+				voo.setDataVooRetorno(dataRetorno.get(i));
 				voo.setAeroportoPartida(aeroportoPartida.get(i));
 				voo.setAeroportoDestino(aeroportoDestino.get(i));
-				if (paginaTemVoos == StatusVoo.SEM_VOO) {					
+				if (paginaTemVoos == StatusVoo.SEM_VOO) {
 					voo.setMomentoVoo(momentoVoo.get(i));
 				}
-				if (paginaTemVoos == StatusVoo.COM_VOO) {					
+				if (paginaTemVoos == StatusVoo.COM_VOO) {
 					voo.setMomentoVoo(momentoVoo.get(i));
 					voo.setLogoCompanhia(logos.get(i));
 					voo.setCompanhia(companhias.get(i));
@@ -125,13 +181,12 @@ public class ScrapingUtil {
 					voo.setCarbono(carbonos.get(i));
 					voo.setPreco(precos.get(i));
 				}
-
 				voos.add(voo);
 			}
 
 			Map<String, Integer> mapQuantidades = new HashMap<>();
 			mapQuantidades.put("dataPartida", dataPartida.size());
-			mapQuantidades.put("dataDestino", dataDestino.size());
+			mapQuantidades.put("dataRetorno", dataRetorno.size());
 			mapQuantidades.put("aeroportoPartida", aeroportoPartida.size());
 			mapQuantidades.put("aeroportoDestino", aeroportoDestino.size());
 			mapQuantidades.put("logos", logos.size());
@@ -152,7 +207,7 @@ public class ScrapingUtil {
 				String listasDivergentes = mapQuantidades.entrySet().stream()
 						.filter(entry -> entry.getValue() != quantidadeReferencia).map(Map.Entry::getKey)
 						.collect(Collectors.joining(", "));
-				LOGGER.info("A quantidade não foi igual! As listas de {} foram diferentes das demais em quantidade.",
+				LOGGER.error("A quantidade não foi igual! As listas de {} foram diferentes das demais em quantidade.",
 						listasDivergentes);
 			}
 
@@ -166,47 +221,45 @@ public class ScrapingUtil {
 	}
 
 	private List<String> obtemMomentoVoo(Page page) {
-	    List<String> horariosPartida = obtemHorarios(page, "partida");
-	    List<String> datasVoo = obtemDataVooPartida(page, auxDataPartida);
-	    List<String> momentosVoo = new ArrayList<>();
+		List<String> horariosPartida = obtemHorarios(page, "partida");
+		List<String> datasVoo = obtemDataVooPartida(page, auxDataPartida);
+		List<String> momentosVoo = new ArrayList<>();
 
-	    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-	    Date agora = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		Date agora = new Date();
 
-	    for (int i = 0; i < horariosPartida.size(); i++) {
-	        String horarioPartida = horariosPartida.get(i).replace("Horário de partida: ", "").replace(".", "");
-	        String dataVoo = datasVoo.get(i);
+		for (int i = 0; i < horariosPartida.size(); i++) {
+			String horarioPartida = horariosPartida.get(i).replace("Horário de partida: ", "").replace(".", "");
+			String dataVoo = datasVoo.get(i);
 
-	        try {
-	            Date dataHoraVoo = sdf.parse(dataVoo + " " + horarioPartida);
+			try {
+				Date dataHoraVoo = sdf.parse(dataVoo + " " + horarioPartida);
 
-	            if (auxVoo == true) {
-	                if (dataHoraVoo.before(agora)) {
-	                    momentosVoo.add("O voo já ocorreu.");
-	                } else if (dataHoraVoo.after(agora)) {
-	                    long diff = dataHoraVoo.getTime() - agora.getTime();
-	                    long dias = diff / (24 * 60 * 60 * 1000);
-	                    long horas = (diff / (60 * 60 * 1000)) % 24;
+				if (auxVoo == true) {
+					if (dataHoraVoo.before(agora)) {
+						momentosVoo.add("O voo já ocorreu.");
+					} else if (dataHoraVoo.after(agora)) {
+						long diff = dataHoraVoo.getTime() - agora.getTime();
+						long dias = diff / (24 * 60 * 60 * 1000);
+						long horas = (diff / (60 * 60 * 1000)) % 24;
 
-	                    if (dias > 0) {
-	                        momentosVoo.add("O voo será daqui " + dias + " dia(s).");
-	                    } else if (horas > 0) {
-	                        momentosVoo.add("O voo será daqui " + horas + " hora(s).");
-	                    } else {
-	                        momentosVoo.add("O voo está prestes a ocorrer.");
-	                    }
-	                }
-	            } else {
-	                momentosVoo.add(null);
-	            }
-	        } catch (ParseException e) {
-	            LOGGER.error("Erro ao analisar data e hora do voo", e);
-	        }
-	    }
-	    LOGGER.info("Situação se ocorreu voo: {}", momentosVoo);
-	    return momentosVoo;
+						if (dias > 0) {
+							momentosVoo.add("O voo será daqui " + dias + " dia(s).");
+						} else if (horas > 0) {
+							momentosVoo.add("O voo será daqui " + horas + " hora(s).");
+						} else {
+							momentosVoo.add("O voo está prestes a ocorrer.");
+						}
+					}
+				} else {
+					momentosVoo.add(null);
+				}
+			} catch (ParseException e) {
+				LOGGER.error("Erro ao analisar data e hora do voo", e);
+			}
+		}
+		return momentosVoo;
 	}
-
 
 	public StatusVoo verificaVoo(Page page) {
 		StatusVoo statusVoo = StatusVoo.SEM_VOO;
@@ -243,8 +296,6 @@ public class ScrapingUtil {
 		// Remover elementos vazios ou que contêm apenas espaços em branco
 		horarios.removeIf(String::isBlank);
 
-		LOGGER.info("Horarios de {}: {}", tipo, horarios);
-
 		return horarios;
 	}
 
@@ -257,34 +308,51 @@ public class ScrapingUtil {
 	}
 
 	public List<String> obtemDataVoo(Page page, String data, int tipo) {
-		List<String> logosCompanhiaVoo = obtemLogoCompanhiaVoo(page);//poderia ser qualquer outro atributo
+		List<String> logosCompanhiaVoo = obtemLogoCompanhiaVoo(page);
 		int tamanho = logosCompanhiaVoo.size();
 
 		List<String> datasVoo = new ArrayList<>();
 
 		for (int i = 0; i < tamanho; i++) {
-			datasVoo.add(data);
+			if (data == null) {
+				datasVoo.add(null);
+			} else if (tipo == 1) {
+				List<String> horariosPartida = obtemHorariosPartida(page);
+				String horario = horariosPartida.get(i).replace("Horário de partida: ", "").replace(".", "");
+				datasVoo.add(data + " " + horario);
+			} else {
+				datasVoo.add(data);
+			}
 		}
-
-		switch(tipo) {
-		case 1:
-		    LOGGER.info("Data de partida: {}", datasVoo);
-		    break;
-		case 2:
-		    LOGGER.info("Data de destino: {}", datasVoo);
-		    break;
-		default:
-		    break;
-	    }
 
 		return datasVoo;
 	}
+	
+	
+//	public List<String> readicionarApenasHoras(List<String> datasComHoras) {
+//	    List<String> apenasHoras = new ArrayList<>();
+//	    
+//	    for (String dataComHora : datasComHoras) {
+//	        if (dataComHora != null) {	        	
+//	            String[] partes = dataComHora.split(" ");
+//	            if (partes.length > 1) {
+//	                apenasHoras.add(partes[1]);
+//	            } else {
+//	                apenasHoras.add(null);
+//	            }
+//	        } else {
+//	            apenasHoras.add(null);
+//	        }
+//	    }
+//	    return apenasHoras;
+//	}
+
 
 	public List<String> obtemDataVooPartida(Page page, String aux) {
 		return obtemDataVoo(page, aux, 1);
 	}
 
-	public List<String> obtemDataVooDestino(Page page, String aux) {
+	public List<String> obtemDataVooRetorno(Page page, String aux) {
 		return obtemDataVoo(page, aux, 2);
 	}
 
@@ -313,7 +381,6 @@ public class ScrapingUtil {
 			}
 		}
 
-		LOGGER.info("Logo da companhia aérea: {}", logos);
 		return logos;
 	}
 
@@ -359,8 +426,6 @@ public class ScrapingUtil {
 				}
 			}
 		}
-
-		LOGGER.info("Companhia aérea: {}", companhias);
 		return companhias;
 	}
 
@@ -383,8 +448,6 @@ public class ScrapingUtil {
 		// Obter o status do voo
 		List<String> statusVoos = obtemStatusVoo(page);
 
-		LOGGER.info("Status: {}", statusVoos);
-
 		// Unir as informações de statusEscalasVoo e statusVoos
 		List<String> statusFinal = new ArrayList<>();
 		Iterator<String> iteratorStatusEscalasVoo = statusEscalasVoo.iterator();
@@ -396,8 +459,6 @@ public class ScrapingUtil {
 				statusFinal.add(statusVoo);
 			}
 		}
-
-		LOGGER.info("Escalas: {}", statusFinal);
 
 		return statusFinal;
 	}
@@ -432,7 +493,7 @@ public class ScrapingUtil {
 
 		for (ElementHandle elemento : elementos) {
 			String duracao = null;
-			String aeroportoDePartida = null;
+			String aeroportoPartida = null;
 			String aeroportoDestino = null;
 
 			String duracaoText = elemento.innerText();
@@ -462,24 +523,21 @@ public class ScrapingUtil {
 
 			if (indiceTraco != -1) {
 				// Obtém os aeroportos de partida e destino com base no traço.
-				aeroportoDePartida = duracaoText.substring(0, indiceTraco).trim();
+				aeroportoPartida = duracaoText.substring(0, indiceTraco).trim();
 				aeroportoDestino = duracaoText.substring(indiceTraco + 1).trim();
 			}
 
 			duracoes.add(duracao);
-			aeroportosPartida.add(aeroportoDePartida);
+			aeroportosPartida.add(aeroportoPartida);
 			aeroportosDestino.add(aeroportoDestino);
 		}
 
 		switch (tipo) {
 		case 1:
-			LOGGER.info("Duração total: {}", duracoes);
 			return duracoes;
 		case 2:
-			LOGGER.info("Aeroporto de partida: {}", aeroportosPartida);
 			return aeroportosPartida;
 		case 3:
-			LOGGER.info("Aeroporto de destino: {}", aeroportosDestino);
 			return aeroportosDestino;
 		default:
 			return null;
@@ -509,8 +567,6 @@ public class ScrapingUtil {
 			texto = texto.replace("\n", " "); // Remove as quebras de linha.
 			carbonos.add(texto);
 		}
-
-		LOGGER.info("Emissão de carbono: {}", carbonos);
 		return carbonos;
 	}
 
@@ -525,17 +581,15 @@ public class ScrapingUtil {
 			String preco = texto.split("\n")[0];
 			precos.add(preco);
 		}
-
-		LOGGER.info("Preço: {}", precos);
 		return precos;
 	}
-	
-	
-	//botar método abaixo como static para teste local  pela main como java application
+
+	// botar método abaixo como static para teste local pela main como java
+	// application
 	public String agrupaUrl(String defSaida, String defChegada, String defDataIda, String defDataVolta) {
 
 		auxDataPartida = defDataIda;
-		auxDataDestino = defDataVolta;
+		auxDataRetorno = defDataVolta;
 		String saida;
 		String chegada;
 		String dataIda;

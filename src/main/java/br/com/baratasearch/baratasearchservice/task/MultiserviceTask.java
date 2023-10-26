@@ -29,12 +29,12 @@ public class MultiserviceTask {
 	@Autowired
     private AeroportoService aeroportoService;
 	
-	//@Scheduled(cron = "0/30 * 19-23 * * SUN-SAT", zone = TIME_ZONE)
-	@Scheduled(cron = "0/30 * * * * SUN-SAT", zone = TIME_ZONE)
-	public void taskVoo() {
-	    iniciaTaskSchedule("taskVoo()");
-	    
-	}
+//	//@Scheduled(cron = "0/30 * 19-23 * * SUN-SAT", zone = TIME_ZONE)
+//	@Scheduled(cron = "0/30 * * * * SUN-SAT", zone = TIME_ZONE)
+//	public void taskVoo() {
+//	    iniciaTaskSchedule("taskVoo()");
+//	    
+//	}
 	
 	@Scheduled(initialDelay = 1000, fixedDelay = Long.MAX_VALUE)
 	public void taskAeroporto() {

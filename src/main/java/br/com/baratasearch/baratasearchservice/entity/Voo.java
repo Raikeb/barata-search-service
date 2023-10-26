@@ -49,8 +49,8 @@ public class Voo implements Serializable{
 	@JoinColumn(name = "sigla_aeroporto_destino_id")
 	private Aeroporto siglaAeroportoDestino;
 	
-	@Column(name = "data_voo_partida")//auxiliar
-	private String dataVooPartida;
+	//@Column(name = "data_voo_partida")//auxiliar
+	//private String dataVooPartida;
 	
 	@Column(name = "data_voo_destino")//auxiliar
 	private String dataVooDestino;
