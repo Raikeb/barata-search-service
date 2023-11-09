@@ -124,16 +124,13 @@ public class ScrapingUtil {
 			page.waitForLoadState(LoadState.NETWORKIDLE);
 
 			String title = page.title();
-			LOGGER.info("Informações de melhores Voo {}", title);// titulo da página
-			
-			//auxHorasPartida.clear();
+			LOGGER.info("Informações de melhores Voo {}", title);// titulo da página						
 			
 			StatusVoo paginaTemVoos = verificaVoo(page);
 			List<String> logos = obtemLogoCompanhiaVoo(page);
 			LOGGER.info("Logo da companhia aérea: {}", logos);// nessa posição e não na ordem para pegar corretamente
 			List<String> dataPartida = obtemDataVooPartida(page, auxDataPartida);
-			LOGGER.info("Data e hora de partida: {}", dataPartida);
-			//auxHorasPartida = readicionarApenasHoras(dataPartida);//auxiliar para pegar apenas horas;
+			LOGGER.info("Data e hora de partida: {}", dataPartida);			
 			List<String> dataRetorno = obtemDataVooRetorno(page, auxDataRetorno);
 			LOGGER.info("Data de retorno: {}", dataRetorno);
 			List<String> aeroportoPartida = obtemAeroportosPartida(page);
@@ -328,25 +325,6 @@ public class ScrapingUtil {
 		return datasVoo;
 	}
 	
-	
-//	public List<String> readicionarApenasHoras(List<String> datasComHoras) {
-//	    List<String> apenasHoras = new ArrayList<>();
-//	    
-//	    for (String dataComHora : datasComHoras) {
-//	        if (dataComHora != null) {	        	
-//	            String[] partes = dataComHora.split(" ");
-//	            if (partes.length > 1) {
-//	                apenasHoras.add(partes[1]);
-//	            } else {
-//	                apenasHoras.add(null);
-//	            }
-//	        } else {
-//	            apenasHoras.add(null);
-//	        }
-//	    }
-//	    return apenasHoras;
-//	}
-
 
 	public List<String> obtemDataVooPartida(Page page, String aux) {
 		return obtemDataVoo(page, aux, 1);
