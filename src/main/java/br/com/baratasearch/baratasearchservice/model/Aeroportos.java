@@ -1,18 +1,21 @@
 package br.com.baratasearch.baratasearchservice.model;
 
 import java.util.HashMap;
+
 import java.util.Map;
 import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import br.com.baratasearch.baratasearchservice.util.ScrapingUtil;
 
+@Service
 public class Aeroportos {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ScrapingUtil.class);
 	
-    private static final Map<String, String> AEROPORTOS = new HashMap<>();
+    public static final Map<String, String> AEROPORTOS = new HashMap<>();
 
     //lista obtida no site https://www.trilhaseaventuras.com.br/siglas-dos-principais-aeroportos-do-mundo-iata/amp/
     static {
@@ -41,7 +44,7 @@ public class Aeroportos {
         AEROPORTOS.put("AGP", "Malaga, Spain – Malaga");
         AEROPORTOS.put("AGR", "Agra, India – Kheria");
         AEROPORTOS.put("AHO", "Alghero, Sardenha, Itália");
-        AEROPORTOS.put("AJU", "Aracaju, Sergipe, Brasil");
+        AEROPORTOS.put("AJU", "Aracaju, Sergipe, SE, Brasil");
         AEROPORTOS.put("AKL", "Auckland, New Zealand – Auckland Intl Airport");
         AEROPORTOS.put("ALA", "Almaty, Kazakhstan – Almaty");
         AEROPORTOS.put("ALG", "Algiers, Algeria – Houari Boumedienne");
@@ -71,12 +74,12 @@ public class Aeroportos {
         AEROPORTOS.put("BAH", "Bahrain, Bahrain – Bahrain Intl");
         AEROPORTOS.put("BAK", "Baku, Azerbaijan – Baku");
         AEROPORTOS.put("BAQ", "Barranquilla, Colombia – E Cortissoz");
-        AEROPORTOS.put("BAU", "Bauru, São Paulo, Brasil – Aeroclube Estadual");
+        AEROPORTOS.put("BAU", "Bauru, São Paulo, SP, Brasil – Aeroclube Estadual");
         AEROPORTOS.put("BBU", "Bucharest, Romania – Baneasa");
         AEROPORTOS.put("BCN", "Barcelona, Spain – Barcelona");
         AEROPORTOS.put("BDL", "Hartford, CT, USA – Bradley Intl Airport");
         AEROPORTOS.put("BEG", "Belgrade, Yugoslavia – Belgrade");
-        AEROPORTOS.put("BEL", "Belem, Para, Brasil – Val De Cans");
+        AEROPORTOS.put("BEL", "Belem, Para, PA, Brasil – Val De Cans");
         AEROPORTOS.put("BEO", "Newcastle, NSW, Australia – Belmont");
         AEROPORTOS.put("BER", "Berlin, Germany – Schoenefeld");
         AEROPORTOS.put("BEY", "Beirut, Lebanon – International");
@@ -109,18 +112,18 @@ public class Aeroportos {
         AEROPORTOS.put("BOM", "Bombay, India – Bombay");
         AEROPORTOS.put("BON", "Bonaire, Netherlands Antilles – Flamingo Field");
         AEROPORTOS.put("BOS", "Boston, MA, USA – Logan International Airport");
-        AEROPORTOS.put("BPS", "Porto Seguro, Bahia, Brasil");
+        AEROPORTOS.put("BPS", "Porto Seguro, Bahia, BA, Brasil");
         AEROPORTOS.put("BRC", "San Carlos De Bariloche, Argentina – Intl");
         AEROPORTOS.put("BRE", "Bremen, Germany – Bremen");
         AEROPORTOS.put("BRI", "Bari Palese, Puglia, Italia – Karol Wojtila");
         AEROPORTOS.put("BRS", "Bristol, England, UK");
         AEROPORTOS.put("BRU", "Brussels, Belgium – National");
-        AEROPORTOS.put("BSB", "Brasilia, Distrito Federal, Brasil – Intl");
+        AEROPORTOS.put("BSB", "Brasilia, Distrito Federal, DF, Brasil – Intl");
         AEROPORTOS.put("BUD", "Budapest, Hungary – Ferihegy");
         AEROPORTOS.put("BUQ", "Bulawayo, Zimbabwe – Bulawayo");
         AEROPORTOS.put("BUR", "Burbank, CA, USA – Burbank Glendale Pasadena");
         AEROPORTOS.put("BVA", "Boa Vista, Cape Verde – Boa Vista");
-        AEROPORTOS.put("BVB", "Boa Vista, Roraima, Brasil");
+        AEROPORTOS.put("BVB", "Boa Vista, Roraima, RR, Brasil");
         AEROPORTOS.put("BWI", "Baltimore, MD, USA – Baltimore-Washington Intl");
         AEROPORTOS.put("BWN", "Bandar Seri Begawan, Brunei – Intl");
         AEROPORTOS.put("BZE", "Belize City, Belize – Belize International");
@@ -130,36 +133,36 @@ public class Aeroportos {
         AEROPORTOS.put("CAI", "Cairo, Egypt – International");
         AEROPORTOS.put("CAN", "Guangzhou, China – Baiyun");
         AEROPORTOS.put("CAS", "Casablanca, Morocco – Anfa");
-        AEROPORTOS.put("CAU", "Caruarú, PE, Brasil – Oscar Laranjeiras");
+        AEROPORTOS.put("CAU", "Caruarú, Pernambuco, PE, Brasil – Oscar Laranjeiras");
         AEROPORTOS.put("CAY", "Cayenne, French Guiana – Rochambeau");
         AEROPORTOS.put("CBB", "Cochabamba, Bolivia – S. J. De La Banda");
         AEROPORTOS.put("CBR", "Canberra, Australia");
-        AEROPORTOS.put("CCM", "Criciúma, Santa Catarina, Brasil");
+        AEROPORTOS.put("CCM", "Criciúma, Santa Catarina, SC, Brasil");
         AEROPORTOS.put("CCP", "Concepcion, Chile – Carriel Sur");
         AEROPORTOS.put("CCS", "Caracas, Venezuela – Simon Bolivar Intl");
         AEROPORTOS.put("CCU", "Calcutta, India – Calcutta");
         AEROPORTOS.put("CDG", "Paris, France – Charles De Gaulle");
         AEROPORTOS.put("CEB", "Cebu, Philippines – International");
-        AEROPORTOS.put("CGB", "Cuiabá, Mato Grosso, Brasil");
-        AEROPORTOS.put("CGH", "São Paulo, Brasil – Congonhas");
+        AEROPORTOS.put("CGB", "Cuiabá, Mato Grosso, MT, Brasil");
+        AEROPORTOS.put("CGH", "São Paulo, SP, Brasil – Congonhas");
         AEROPORTOS.put("CGK", "Jakarta, Indonesia – Soekarno Hatta Intl");
         AEROPORTOS.put("CGN", "Cologne/Bonn, Germany – Köln/Bonn");
-        AEROPORTOS.put("CGR", "Campo Grande, MS, Brasil");
+        AEROPORTOS.put("CGR", "Campo Grande, Mato Grosso do Sul, MS, Brasil");
         AEROPORTOS.put("CHC", "Christchurch, New Zealand – Intl");
         AEROPORTOS.put("CHM", "Chimbote, Peru");
         AEROPORTOS.put("CHS", "Charleston, SC, USA – Charleston Il");
         AEROPORTOS.put("CIA", "Rome, Italy – Ciampino");
         AEROPORTOS.put("CJU", "Cheju, South Korea – Cheju");
-        AEROPORTOS.put("CKS", "Carajás, Pará, Brasil");
+        AEROPORTOS.put("CKS", "Carajás, Pará, PA, Brasil");
         AEROPORTOS.put("CKY", "Conakry, Guinea – Conakry");
         AEROPORTOS.put("CLE", "Cleveland, OH, USA – Hopkins Intl");
         AEROPORTOS.put("CLO", "Cali, Colombia – Alfonso Bonilla Aragon");
         AEROPORTOS.put("CLT", "Charlotte, NC, USA – Charlotte/Douglas Intl");
         AEROPORTOS.put("CMB", "Colombo, Sri Lanka – Katunayake Intl");
-        AEROPORTOS.put("CMG", "Corumbá, MS, Brasil");
+        AEROPORTOS.put("CMG", "Corumbá, Mato Grosso do Sul, MS, Brasil");
         AEROPORTOS.put("CMH", "Columbus, OH, USA – Port Columbus Intl");
         AEROPORTOS.put("CMN", "Casablanca, Morocco – Mohamed V");
-        AEROPORTOS.put("CNF", "Belo Horizonte, Brasil – Tancredo Neves");
+        AEROPORTOS.put("CNF", "Belo Horizonte, Minas Gerais, BH, Brasil – Tancredo Neves");
         AEROPORTOS.put("CNS", "Cairns, Queensland, Australia");
         AEROPORTOS.put("CNX", "Chiang Mai, Thailand – Intl");
         AEROPORTOS.put("COR", "Cordoba, Argentina – Pajas Blancas");
@@ -167,7 +170,7 @@ public class Aeroportos {
         AEROPORTOS.put("CPC", "San Martin De Los Andes, Neuquen, Argentina");
         AEROPORTOS.put("CPH", "Copenhagen, Denmark");
         AEROPORTOS.put("CPT", "Cape Town, South Africa – D F Malan");
-        AEROPORTOS.put("CPV", "Campina Grande, Paraíba, Brasil");
+        AEROPORTOS.put("CPV", "Campina Grande, Paraíba, PB, Brasil");
         AEROPORTOS.put("CRD", "Comodoro Rivadavia, Chubut, Argentina");
         AEROPORTOS.put("CRU", "Carriacou Island, Grenada");
         AEROPORTOS.put("CTG", "Cartagena, Colombia – Rafael Nunez");
@@ -180,12 +183,12 @@ public class Aeroportos {
         AEROPORTOS.put("CUU", "Chihuahua, Mexico – Gen. Villalobos");
         AEROPORTOS.put("CUZ", "Cuzco, Peru – Tte Velazco Astete");
         AEROPORTOS.put("CVG", "Cincinnati, OH, USA – Greater Cincinnati Intl");
-        AEROPORTOS.put("CWB", "Curitiba, Paraná, Brasil – Afonso Pena");
+        AEROPORTOS.put("CWB", "Curitiba, Paraná, PR, Brasil – Afonso Pena");
         AEROPORTOS.put("CWL", "Cardiff, Wales, United Kingdom");
         AEROPORTOS.put("CYB", "Cayman Brac Island, Cayman Islands");
         AEROPORTOS.put("CYR", "Colonia, Uruguay");
         AEROPORTOS.put("CZM", "Cozumel, Quintana Roo, México");
-        AEROPORTOS.put("CZS", "Cruzeiro do Sul, Acre, Brasil");
+        AEROPORTOS.put("CZS", "Cruzeiro do Sul, Acre, AC, Brasil");
         
         //Aeroportos de sigla D
         AEROPORTOS.put("DAB", "Daytona Beach, FL, USA");
@@ -253,11 +256,11 @@ public class Aeroportos {
         AEROPORTOS.put("FEZ", "Fez, Morocco");
         AEROPORTOS.put("FIH", "Kinshasa, Zaire – Kinshasa");
         AEROPORTOS.put("FLL", "Ft Lauderdale, FL, USA – F. Laud. Hollywood Intl");
-        AEROPORTOS.put("FLN", "Florianópolis, SC, Brasil");
+        AEROPORTOS.put("FLN", "Florianópolis, Santa Catarina, SC, Brasil");
         AEROPORTOS.put("FLR", "Florença, Italia");
         AEROPORTOS.put("FMO", "Münster, Germany");
         AEROPORTOS.put("FNC", "Funchal, Madeira, Portugal");
-        AEROPORTOS.put("FOR", "Fortaleza, CE, Brasil");
+        AEROPORTOS.put("FOR", "Fortaleza, Ceará, CE, Brasil");
         AEROPORTOS.put("FPO", "Freeport, Bahamas – Intl");
         AEROPORTOS.put("FRA", "Frankfurt, Germany – International");
         AEROPORTOS.put("FUK", "Fukuoka, Japan – Itazuke");
@@ -291,11 +294,11 @@ public class Aeroportos {
         AEROPORTOS.put("GRZ", "Graz, Austria – Thalerhof");
         AEROPORTOS.put("GUA", "Guatemala City, Guatemala – La Aurora");
         AEROPORTOS.put("GUM", "Guam – Ab Wonpat Intl");
-        AEROPORTOS.put("GUZ", "Guarapari, Espírito Santo, Brasil");
+        AEROPORTOS.put("GUZ", "Guarapari, Espírito Santo, ES, Brasil");
         AEROPORTOS.put("GVA", "Geneva, Switzerland");
         AEROPORTOS.put("GXQ", "Coyhaique, Chile – Teniente Vidal");
         AEROPORTOS.put("GYE", "Guayaquil, Ecuador – Simon Bolívar");
-        AEROPORTOS.put("GYN", "Goiânia , GO, Brasil – Santa Genoveva");
+        AEROPORTOS.put("GYN", "Goiânia, GO, Brasil – Santa Genoveva");
         
         //Aeroportos de sigla H
         AEROPORTOS.put("HAG", "The Hague, Netherlands");
@@ -334,14 +337,14 @@ public class Aeroportos {
         AEROPORTOS.put("IEV", "Kiev, Ukraine – Zhulhany");
         AEROPORTOS.put("IGM", "Kingman, AZ, USA – Mohave County");
         AEROPORTOS.put("IGR", "Iguazu, Argentina – International");
-        AEROPORTOS.put("IGU", "Foz do Iguaçu, PR, Brasil – Cataratas");
+        AEROPORTOS.put("IGU", "Foz do Iguaçu, Paraná, PR, Brasil – Cataratas");
         AEROPORTOS.put("IKT", "Irkutsk, Russia");
-        AEROPORTOS.put("IMP", "Imperatriz, MA, Brasil");
+        AEROPORTOS.put("IMP", "Imperatriz, Maranhão, MA, Brasil");
         AEROPORTOS.put("INN", "Innsbruck, Austria – Kranebitten");
         AEROPORTOS.put("INU", "Nauru, Nauru");
         AEROPORTOS.put("INV", "Inverness, Scotland, UK");
         AEROPORTOS.put("IOM", "Isle Of Man, UK – Ronaldsway");
-        AEROPORTOS.put("IOS", "Ilhéus, BA, Brasil");
+        AEROPORTOS.put("IOS", "Ilhéus, Bahia, BA, Brasil");
         AEROPORTOS.put("IPC", "Ilha da Páscoa, Chile – Mataveri");
         AEROPORTOS.put("IPH", "Ipoh, Malaysia – Ipoh");
         AEROPORTOS.put("IPI", "Ipiales, Colombia – San Luis");
@@ -357,9 +360,9 @@ public class Aeroportos {
         //Aeroportos de sigla J
         AEROPORTOS.put("JAI", "Jaipur, India – Sanganeer");
         AEROPORTOS.put("JAX", "Jacksonville, FL, USA – International");
-        AEROPORTOS.put("JDF", "Juíz de Fora, MG, Brasil");
+        AEROPORTOS.put("JDF", "Juíz de Fora, Minas Gerais, MG, Brasil");
         AEROPORTOS.put("JDH", "Jodhpur, India");
-        AEROPORTOS.put("JDO", "Juazeiro do Norte, CE, Brasil – Orlando Bezerra de Menezes");
+        AEROPORTOS.put("JDO", "Juazeiro do Norte, Ceará, CE, Brasil – Orlando Bezerra de Menezes");
         AEROPORTOS.put("JED", "Jeddah, Saudi Arabia – International");
         AEROPORTOS.put("JER", "Jersey, Channel Islands, UK – States");
         AEROPORTOS.put("JFK", "New York, USA – John F Kennedy Intl");
@@ -369,10 +372,10 @@ public class Aeroportos {
         AEROPORTOS.put("JNB", "Johannesburg, South Africa – Jan Smuts");
         AEROPORTOS.put("JNX", "Naxos, Greece");
         AEROPORTOS.put("JOG", "Yogyakarta, Indonesia");
-        AEROPORTOS.put("JOI", "Joinville, SC, Brasil");
+        AEROPORTOS.put("JOI", "Joinville, Santa Catarina, SC, Brasil");
         AEROPORTOS.put("JON", "Johnston Island, US, Outlying Islands");
         AEROPORTOS.put("JRO", "Kilimanjaro, Tanzania");
-        AEROPORTOS.put("JTC", "Bauru-Arealva, SP, Brasil");
+        AEROPORTOS.put("JTC", "Bauru-Arealva, São Paulo, SP, Brasil");
         AEROPORTOS.put("JTR", "Santorini, Greece");
         AEROPORTOS.put("JUJ", "Jujuy, Argentina – El Cadillal");
         AEROPORTOS.put("JUL", "Juliaca, Peru – Juliaca");
@@ -420,7 +423,7 @@ public class Aeroportos {
         AEROPORTOS.put("LCE", "La Ceiba, Honduras – International");
         AEROPORTOS.put("LCG", "La Coruna, Spain");
         AEROPORTOS.put("LCY", "London, England, UK – London City");
-        AEROPORTOS.put("LDB", "Londrina, PR, Brasil");
+        AEROPORTOS.put("LDB", "Londrina, Paraná, PR, Brasil");
         AEROPORTOS.put("LDE", "Lourdes/Tarbes, France –");
         AEROPORTOS.put("LEJ", "Leipzig, Germany");
         AEROPORTOS.put("LET", "Leticia, Colombia – Gen Av Cobu");
@@ -459,16 +462,16 @@ public class Aeroportos {
         AEROPORTOS.put("MAH", "Menorca, Spain");
         AEROPORTOS.put("MAJ", "Majuro, Marshall Islands – International");
         AEROPORTOS.put("MAN", "Manchester, England, UK");
-        AEROPORTOS.put("MAO", "Manaus, AM, Brasil – Eduardo Gomes");
+        AEROPORTOS.put("MAO", "Manaus, Amazonas, AM, Brasil – Eduardo Gomes");
         AEROPORTOS.put("MAR", "Maracaibo, Venezuela – La Chinita");
         AEROPORTOS.put("MBA", "Mombasa, Kenya – Moi International");
         AEROPORTOS.put("MBJ", "Montego Bay, Jamaica – Sangster");
         AEROPORTOS.put("MCI", "Kansas City, MO, USA – International");
         AEROPORTOS.put("MCM", "Monte Carlo, Monaco – Heliporto");
         AEROPORTOS.put("MCO", "Orlando, FL, USA – International");
-        AEROPORTOS.put("MCP", "Macapa, AP, Brasil");
+        AEROPORTOS.put("MCP", "Macapa, Amapá, AP, Brasil");
         AEROPORTOS.put("MCT", "Muscat, Oman – Seeb");
-        AEROPORTOS.put("MCZ", "Maceió AL, Brasil – Zumbi dos Palmares");
+        AEROPORTOS.put("MCZ", "Maceió, Alagoas, AL, Brasil – Zumbi dos Palmares");
         AEROPORTOS.put("MDC", "Manado, Indonesia – Samratulang");
         AEROPORTOS.put("MDE", "Medellin, Colombia – La Playas");
         AEROPORTOS.put("MDQ", "Mar Del Plata, Argentina");
@@ -499,14 +502,14 @@ public class Aeroportos {
         AEROPORTOS.put("MUC", "Munich, Germany – Franz Josef Strauss");
         AEROPORTOS.put("MUN", "Maturin, Venezuela");
         AEROPORTOS.put("MVD", "Montevideo, Uruguay – Carrasco");
-        AEROPORTOS.put("MVF", "Mossoró, Rio Grande do Norte, Brasil – Dix-Sept Rosado");
+        AEROPORTOS.put("MVF", "Mossoró, Rio Grande do Norte, RN, Brasil – Dix-Sept Rosado");
         AEROPORTOS.put("MXP", "Milan, Italy – Malpensa");
         
         //Aeroportos de sigla N
         AEROPORTOS.put("NAN", "Nadi, Fiji – International");
         AEROPORTOS.put("NAP", "Naples, Italy – Capodichino");
         AEROPORTOS.put("NAS", "Nassau, Bahamas – International");
-        AEROPORTOS.put("NAT", "Natal, RN, Brasil – Augusto Severo");
+        AEROPORTOS.put("NAT", "Natal, Rio Grande do Norte, RN, Brasil – Augusto Severo");
         AEROPORTOS.put("NBO", "Nairobi, Kenya – Jomo Kenyatta");
         AEROPORTOS.put("NCA", "North Caicos, Turks & Caicos");
         AEROPORTOS.put("NCE", "Nice, France – Cote D`Azur");
@@ -528,7 +531,7 @@ public class Aeroportos {
         AEROPORTOS.put("NTE", "Nantes, France - Chateau Bougon");
         AEROPORTOS.put("NTL", "Newcastle, Australia – Williamtown");
         AEROPORTOS.put("NUE", "Nuremberg, Germany – Nuremberg");
-        AEROPORTOS.put("NVT", "Navegantes, SC, Brasil");
+        AEROPORTOS.put("NVT", "Navegantes, Santa Catarina, SC, Brasil");
         
         //Aeroportos de sigla O 
         AEROPORTOS.put("OAK", "Oakland, CA, USA – Metropolitan");
@@ -579,15 +582,15 @@ public class Aeroportos {
         AEROPORTOS.put("PIK", "Glasgow, Scotland, UK – Prestwick");
         AEROPORTOS.put("PIT", "Pittsburgh, PA, USA – Greater Pit Intl");
         AEROPORTOS.put("PLS", "Providenciales, Turks And Caicos");
-        AEROPORTOS.put("PLU", "Belo Horizonte MG, Brasil – Pampulha");
+        AEROPORTOS.put("PLU", "Belo Horizonte, Minas Gerais, MG, Brasil – Pampulha");
         AEROPORTOS.put("PMC", "Puerto Montt, Chile – Tepual");
-        AEROPORTOS.put("PMG", "Ponta Porã, Mato Grosso do Sul, Brasil");
+        AEROPORTOS.put("PMG", "Ponta Porã, Mato Grosso do Sul, MS, Brasil");
         AEROPORTOS.put("PMI", "Palma Mallorca, Spain");
         AEROPORTOS.put("PMO", "Palermo, Sicily, Italy – Punta Raisi");
         AEROPORTOS.put("PNH", "Phnom Penh, Cambodia – Pochentong");
         AEROPORTOS.put("PNI", "Pohnpei, Caroline Islands, Micronesia");
-        AEROPORTOS.put("PNZ", "Petrolina, PE, Brasil – Senador Nilo Coelho");
-        AEROPORTOS.put("POA", "Porto Alegre, RS, Brasil – Salgado Filho");
+        AEROPORTOS.put("PNZ", "Petrolina, Pernambuco, PE, Brasil – Senador Nilo Coelho");
+        AEROPORTOS.put("POA", "Porto Alegre, Rio Grande do Sul, RS, Brasil – Salgado Filho");
         AEROPORTOS.put("POG", "Port Gentil, Gabon");
         AEROPORTOS.put("POM", "Port Moresby, Papua New Guinea – Jackson");
         AEROPORTOS.put("POP", "Puerto Plata, Dominican Republic – La Union");
@@ -605,7 +608,7 @@ public class Aeroportos {
         AEROPORTOS.put("PUQ", "Punta Arenas, Chile – Presidente Ibanez");
         AEROPORTOS.put("PUS", "Pusan, South Korea – Kimhae");
         AEROPORTOS.put("PVG", "Shangai, China – Pudong");
-        AEROPORTOS.put("PVH", "Porto Velho RO, Brasil Gov. Jorge Texeira");
+        AEROPORTOS.put("PVH", "Porto Velho, Rondônia, RO, Brasil Gov. Jorge Texeira");
         AEROPORTOS.put("PVR", "Puerto Vallarta, Mexico – Gustavo Diaz Ordaz");
         AEROPORTOS.put("PXM", "Puerto Escondido, Oaxaca, Mexico");
         AEROPORTOS.put("PZO", "Puerto Ordaz, Venezuela");
@@ -622,12 +625,12 @@ public class Aeroportos {
         AEROPORTOS.put("RAB", "Rabaul, Papua New Guinea – Lakunai");
         AEROPORTOS.put("RAI", "Praia, Ilha de Santiago, Cape Verde – Praia");
         AEROPORTOS.put("RAK", "Marrakech, Morocco – Menara");
-        AEROPORTOS.put("RAO", "Ribeirão Preto, SP, Brasil – Leite Lopes");
+        AEROPORTOS.put("RAO", "Ribeirão Preto, São Paulo, SP, Brasil – Leite Lopes");
         AEROPORTOS.put("RAR", "Rarotonga, Cook Islands");
         AEROPORTOS.put("RBA", "Rabat, Morocco – Sale");
-        AEROPORTOS.put("RBR", "Rio Branco AC, Brasil – Plácido de Castro");
+        AEROPORTOS.put("RBR", "Rio Branco, Acre, AC, Brasil – Plácido de Castro");
         AEROPORTOS.put("RDU", "Raleigh/Durham, NC, USA – Intl");
-        AEROPORTOS.put("REC", "Recife, Pernambuco, Brasil – Guararapes / Gilberto Freyre");
+        AEROPORTOS.put("REC", "Recife, Pernambuco, PE, Brasil – Guararapes / Gilberto Freyre");
         AEROPORTOS.put("REG", "Reggio Calabria, Italy – Tito Menniti");
         AEROPORTOS.put("REL", "Trelew, Chubut, Argentina");
         AEROPORTOS.put("RES", "Resistencia, Chaco, Argentina");
@@ -680,7 +683,7 @@ public class Aeroportos {
         AEROPORTOS.put("SIN", "Singapore, Singapore – Changi");
         AEROPORTOS.put("SJC", "San Jose, CA, USA – International");
         AEROPORTOS.put("SJJ", "Sarajevo, Bosnia Herzegowina – Butmir");
-        AEROPORTOS.put("SJK", "São José dos Campos, São Paulo, Brasil");
+        AEROPORTOS.put("SJK", "São José dos Campos, São Paulo, SP, Brasil");
         AEROPORTOS.put("SJO", "San Jose, Costa Rica – Juan Santamaria International");
         AEROPORTOS.put("SJU", "San Juan, PR, USA – Luis Munoz Marin");
         AEROPORTOS.put("SJW", "Shijiazhuang, China – Shijiazhuang");
@@ -690,7 +693,7 @@ public class Aeroportos {
         AEROPORTOS.put("SLA", "Salta, Salta, Argentina");
         AEROPORTOS.put("SLC", "Salt Lake City, UT, USA");
         AEROPORTOS.put("SLU", "St Lucia, Saint Lucia – Vigie Field");
-        AEROPORTOS.put("SLZ", "São Luiz, Maranhão, Brasil – Tirirical");
+        AEROPORTOS.put("SLZ", "São Luiz, Maranhão, MA, Brasil – Tirirical");
         AEROPORTOS.put("SMF", "Sacramento, CA, USA – Metropolitan");
         AEROPORTOS.put("SNA", "Santa Ana, CA, USA – John Wayne");
         AEROPORTOS.put("SNN", "Shannon, Ireland – Shannon");
@@ -700,10 +703,10 @@ public class Aeroportos {
         AEROPORTOS.put("SPR", "San Pedro, Belize");
         AEROPORTOS.put("SRE", "Sucre, Bolivia");
         AEROPORTOS.put("SRQ", "Sarasota/Bradenton, FL, USA");
-        AEROPORTOS.put("SSA", "Salvador, Brasil – Dep. L. E. Magalhães");
+        AEROPORTOS.put("SSA", "Salvador, Bahia, BA, Brasil – Dep. L. E. Magalhães");
         AEROPORTOS.put("SSH", "Sharm El Sheikh, Egypt – Ophira");
         AEROPORTOS.put("STL", "St Louis, MO, USA – Lambert-St Louis Intl");
-        AEROPORTOS.put("STM", "Santarém, Pará, Brasil");
+        AEROPORTOS.put("STM", "Santarém, Pará, PA, Brasil");
         AEROPORTOS.put("STN", "London, England, UK – Stansted");
         AEROPORTOS.put("STR", "Stuttgart, Germany – Echterdingen");
         AEROPORTOS.put("STT", "St Thomas Island, VI, USA – Cyril E King");
@@ -729,12 +732,12 @@ public class Aeroportos {
         AEROPORTOS.put("TAM", "Tampico, Tamaulipas, Mexico");
         AEROPORTOS.put("TAS", "Tashkent, Uzbekistan");
         AEROPORTOS.put("TBS", "Tbilisi, Georgia – Novo Alexeyevka");
-        AEROPORTOS.put("TBT", "Tabatinga, Amazonas, Brasil");
+        AEROPORTOS.put("TBT", "Tabatinga, Amazonas, AM, Brasil");
         AEROPORTOS.put("TBU", "Nuku Alofa/Tongatapu, Tonga");
         AEROPORTOS.put("TFN", "Tenerife, Canarias, Espanha – Los Rodeos");
         AEROPORTOS.put("TFS", "Tenerife, Canarias, Espanha – Reina Sofia");
         AEROPORTOS.put("TGU", "Tegucigalpa, Honduras – Toncontin");
-        AEROPORTOS.put("THE", "Teresina, Piaui, Brasil");
+        AEROPORTOS.put("THE", "Teresina, Piaui, PI, Brasil");
         AEROPORTOS.put("THF", "Berlin, Germany – Tempelhof");
         AEROPORTOS.put("THR", "Tehran, Iran – Mehrabad");
         AEROPORTOS.put("TIA", "Tirana, Albania – Rinas");
@@ -799,7 +802,7 @@ public class Aeroportos {
         AEROPORTOS.put("VAS", "Sivas, Turkey – Sivas");
         AEROPORTOS.put("VBY", "Visby, Sweden – Visby");
         AEROPORTOS.put("VCE", "Venice, Italy – Marco Polo");
-        AEROPORTOS.put("VCP", "Campinas, São Paulo, Brasil – Viracopos");
+        AEROPORTOS.put("VCP", "Campinas, São Paulo, SP, Brasil – Viracopos");
         AEROPORTOS.put("VDM", "Viedma Gobernador Castello, Argentina");
         AEROPORTOS.put("VDZ", "Valdez, AK, USA");
         AEROPORTOS.put("VFA", "Victoria Falls, Zimbabwe");
@@ -807,7 +810,7 @@ public class Aeroportos {
         AEROPORTOS.put("VIE", "Vienna, Austria – Schwechat");
         AEROPORTOS.put("VIJ", "Virgin Gorda, Virgin Islands (British)");
         AEROPORTOS.put("VIT", "Vitoria, Spain");
-        AEROPORTOS.put("VIX", "Vitoria, ES, Brasil – Eurico Sales");
+        AEROPORTOS.put("VIX", "Vitoria, Espírito Santo, ES, Brasil – Eurico Sales");
         AEROPORTOS.put("VKO", "Moscou, Russia – Vnukovo");
         AEROPORTOS.put("VLC", "Valencia, Spain – Valencia");
         AEROPORTOS.put("VLG", "Villa Gesell, Buenos Aires, Argentina");
@@ -848,7 +851,7 @@ public class Aeroportos {
 		//Aeroportos de sigla X
         AEROPORTOS.put("XAI", "Xinyang Minggang Airport, Xinyang, Henan, China");
         AEROPORTOS.put("XAL", "Álamos Airport, Álamos, Sonora, Mexico");
-        AEROPORTOS.put("XAP", "Serafin Enoss Bertaso Airport, Chapecó, Santa Catarina, Brazil");
+        AEROPORTOS.put("XAP", "Serafin Enoss Bertaso Airport, Chapecó, Santa Catarina, SC, Brasil");
         AEROPORTOS.put("XAR", "Aribinda Airport, Aribinda, Burkina Faso");
         AEROPORTOS.put("XAU", "Saül Airport, Saül, French Guiana");
         AEROPORTOS.put("XBB", "Blubber Bay Seaplane Base, Blubber Bay, British Columbia, Canada");
@@ -992,5 +995,6 @@ public class Aeroportos {
         }
         return commonsLength;
     }
-
+   
+    
 }
