@@ -19,8 +19,8 @@ public class ResourceExceptionHandler extends ResponseEntityExceptionHandler {
 				.body(new StandardError(HttpStatus.BAD_REQUEST, e.getMessage(), request.getRequestURI()));
 	}
 
-	@ExceptionHandler(UnathorizedException.class)
-	public ResponseEntity<StandardError> unathorizedException(UnathorizedException e, HttpServletRequest request) {
+	@ExceptionHandler(UnauthorizedException.class)
+	public ResponseEntity<StandardError> unauthorizedException(UnauthorizedException e, HttpServletRequest request) {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
 				.body(new StandardError(HttpStatus.UNAUTHORIZED, e.getMessage(), request.getRequestURI()));
 	}
